@@ -4,12 +4,15 @@
   "description": "Leaderboard for No Escape Iowa",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "begin": "node index.js",
+    "dev": "concurrently \"npm run begin\" \" cd ../frontend && npm start\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^8.0.1",
     "express": "^4.18.2"
   }
 }
