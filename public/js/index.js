@@ -1,15 +1,15 @@
 //Server at 10.11.40.129
 class entry{
-    constructor(room,team,time){
-        this.room = room;
-        this.team = team;
-        this.time = time;
+    constructor(Room,Team,Time){
+        this.Room = Room;
+        this.Team = Team;
+        this.Time = Time;
     }
     toString(){
-        return this.team+" "+this.time;
+        return this.Team+" "+this.Time;
     }
     toJSON(){
-        return "{\"Room\":\""+this.room+"\",\"Team\":\""+this.team+",\"Time\":\""+this.time+"\"}";
+        return "{\"Room\":\""+this.Room+"\",\"Team\":\""+this.Team+",\"Time\":\""+this.Time+"\"}";
     }
 };
 
@@ -19,11 +19,12 @@ class entry{
 var rooms = [];
 var roomArray = [];
 var roomToShow = 0;
+var jsondata;
 
-
-fetch('../leaderboard.json')
+fetch("../leaderboard.json")
 .then(response => response.json())
 .then(data => {
+    jsondata = data;
     for(let index in data){
         let roomNum;
         let room = data[index].Room;
@@ -41,9 +42,9 @@ fetch('../leaderboard.json')
         
     }
     
-    /*for(let arrNum in roomArray){
+    for(let arrNum in roomArray){
         window.roomArray[arrNum] = mergeSort(window.roomArray[arrNum]);
-    }*/
+    }
 
     displayRoom("Mascot Mania");
 
@@ -51,35 +52,49 @@ fetch('../leaderboard.json')
 .catch(err => console.log(err));
 
 function mergeSort(arr) {
-    if (arr.length <= 1) { return arr; }
-
-    const middle = Math.floor(arr.length / 2);
-    const left = arr.slice(0, middle);
-    const right = arr.slice(middle);
-
-    const sortedLeft = mergeSort(left);
-    const sortedRight = mergeSort(right);
-
-    return merge(sortedLeft, sortedRight);
-}
-
-function merge(left, right) {
-    let result = [];
+    if (arr.length <= 1) {
+      return arr; // base case: arrays with 0 or 1 element are already sorted
+    }
+  
+    // Split the array into two halves
+    const middleIndex = Math.floor(arr.length / 2);
+    const leftHalf = arr.slice(0, middleIndex);
+    const rightHalf = arr.slice(middleIndex);
+  
+    // Recursively sort each half
+    const sortedLeft = mergeSort(leftHalf);
+    const sortedRight = mergeSort(rightHalf);
+  
+    // Merge the two sorted halves back together
+    const mergedArr = [];
     let leftIndex = 0;
     let rightIndex = 0;
-
-    while (leftIndex < left.length && rightIndex < right.length) {
-        if (left[leftIndex].time < right[rightIndex].time) {
-            result.push(left[leftIndex]);
+  
+    while (leftIndex < sortedLeft.length && rightIndex < sortedRight.length) {
+        let leftMins = parseInt(sortedLeft[leftIndex].Time.split(":")[0],10);
+        let rightMins = parseInt(sortedRight[rightIndex].Time.split(":")[0],10);
+        if(leftMins == rightMins){
+            let leftSecs = parseInt(sortedLeft[leftIndex].Time.split(":")[1],10);
+        let rightSecs = parseInt(sortedRight[rightIndex].Time.split(":")[1],10);
+        if (leftSecs < rightSecs) {
+            mergedArr.push(sortedLeft[leftIndex]);
             leftIndex++;
-        } else {
-            result.push(right[rightIndex]);
+          } else {
+            mergedArr.push(sortedRight[rightIndex]);
             rightIndex++;
-        }
+          }
+        } else if (leftMins < rightMins) {
+        mergedArr.push(sortedLeft[leftIndex]);
+        leftIndex++;
+      } else {
+        mergedArr.push(sortedRight[rightIndex]);
+        rightIndex++;
+      }
     }
-
-    return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
-}
+  
+    return mergedArr.concat(sortedLeft.slice(leftIndex)).concat(sortedRight.slice(rightIndex));
+  }
+  
 
 var open = false;
 function toggleNav(){
@@ -163,8 +178,8 @@ function displayRoom(roomName){
     for(let j=1; j<=room.length; j++){
         if(j<=5){
             ranks[j-1].textContent = j;
-            teams[j-1].textContent = room[j-1].team;
-            times[j-1].textContent = room[j-1].time;
+            teams[j-1].textContent = room[j-1].Team;
+            times[j-1].textContent = room[j-1].Time;
         } else {
             break;
         }
@@ -178,7 +193,34 @@ function displayRoom(roomName){
 function toggleNewEntry(open) {
     var popup = document.getElementById("newEntry");
     
-    if(open){ popup.style.display = "block"; }
-    else{ popup.style.display = "none";
+    if(open){ popup.style.display = "block"; populateRoomRadio(); }
+    else{ popup.style.display = "none"; document.getElementById("roomSelect").innerHTML = ""; }
+}
+
+function populateRoomRadio(){
+    const select = document.getElementById("roomSelect");
+    for(let room of rooms){
+        const option = document.createElement("option");
+        option.value = room;
+        option.innerHTML = room;
+        select.appendChild(option);
     }
 }
+
+document.addEventListener("DOMContentLoaded",()=>{
+    const form = document.getElementById('formEntry');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        window.jsondata.push(Object.fromEntries(new FormData(form).entries()));
+
+        fetch('/newEntry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(jsondata),
+        })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error(error));
+    });
+})

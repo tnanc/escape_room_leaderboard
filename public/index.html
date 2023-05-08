@@ -96,7 +96,7 @@
                 </div>
             </div>
             <div id="nav" class="nav">
-                <div class="dropdown">
+                <div class="menu-container">
                     <button onclick="toggleRoomDrop()" class="roomDrop">Display Room...</button>
                     <div id="roomsList" class="room-content">
                       <input type="text" placeholder="Search" id="roomSearch" onkeyup="roomFilter()">
@@ -107,7 +107,7 @@
                       <a onclick="displayRoom('Where\'s The Remote')" style="cursor:pointer;">Where's The Remote</a>
                     </div>
                 </div>
-                <div>
+                <div class="menu-container">
                     <button onclick="toggleNewEntry(true)">Add Entry</button>
                 </div>
             </div>
@@ -117,7 +117,12 @@
                 <!-- Modal content -->
                 <div class="newEntry-content" style="display:flex; flex-direction: column;">
                   <span class="closeNewEntry" style="cursor: pointer; font-size: xx-large;align-self: flex-end;color:black;" onclick="toggleNewEntry(false)">&times;</span>
-                  
+                  <form action="/newEntry" method="post" id="formEntry">
+                    <select name="Room" id="roomSelect"></select>
+                    <input type="text" name="Team" placeholder="Team Name"/>
+                    <input type="text" name="Time" placeholder="Time"/>
+                    <button type="submit">New Entry</button>
+                  </form>
                 </div>
             </div>
         </main>
