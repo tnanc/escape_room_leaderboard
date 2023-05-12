@@ -114,11 +114,10 @@ function toggleRoomDrop() {
   }
   
 function roomFilter() {
-    let input, filter, a;
+    let input, filter, a, txtValue;
     input = document.getElementById("roomSearch");
     filter = input.value.toUpperCase();
-    div = document.getElementById("roomsList");
-    a = div.getElementsByTagName("a");
+    a = document.getElementById("roomsList").getElementsByTagName("a");
     for (let i = 0; i < a.length; i++) {
         txtValue = a[i].textContent || a[i].innerText;
         if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -190,32 +189,122 @@ function displayRoom(roomName){
     leaderboard.style.bottom = height+"px";
 }
 
-function toggleNewEntry(open) {
-    var popup = document.getElementById("newEntry");
-    
-    if(open){ popup.style.display = "block"; populateRoomRadio(); }
-    else{ popup.style.display = "none"; document.getElementById("roomSelect").innerHTML = ""; }
+function toggleModal(operation) {
+    let popup = document.getElementById("modal");
+    let content;
+    for(let div of popup.children){
+        div.style.display = "none";
+    }
+    switch(operation){
+        case 'add':
+            content = document.getElementById("add-content");
+            break;
+        case 'update':
+            content = document.getElementById("update-content");
+            document.getElementById("changeTimeTo").style.display = "none";
+            break;
+        case 'delete':
+            content = document.getElementById("delete-content");
+            break;
+        default:
+            break;
+    }
+
+    if(popup.style.display=="none"){
+        popup.style.display="block";
+        content.style.display="block";
+        populateRoomRadio();
+    } else {
+        popup.style.display="none";
+    }
 }
 
 function populateRoomRadio(){
-    const select = document.getElementById("roomSelect");
-    for(let room of rooms){
-        const option = document.createElement("option");
-        option.value = room;
-        option.innerHTML = room;
-        select.appendChild(option);
+    const select = document.getElementsByClassName("roomSelect");
+    for(let div of select){
+        div.innerHTML = "";
+        for(let room of rooms){
+            const option = document.createElement("option");
+            option.value = room;
+            option.innerHTML = room;
+            div.appendChild(option);
+        }
+    }
+    
+}
+
+function populateTimeList(){
+    const list = document.getElementById('timesList');
+    const select = document.getElementsByClassName('roomSelect')[1];
+    list.innerHTML = "";
+    let i;
+    for(let room in rooms){
+        if(rooms[room] == select.value){
+            i = room;
+            break;
+        } else { i=-1; }
+    }
+    if(i<0){return ;}
+    for(let entry of roomArray[i]){
+        const a = document.createElement("a");
+        a.innerHTML = entry.Team+" | "+entry.Time;
+        a.style.cursor = "pointer";
+        a.onclick = () => {
+            document.getElementById("timeSearch").value = a.textContent.split(" | ")[0];
+            document.getElementById("timeTime").value = a.textContent.split(" | ")[1];
+        }
+        list.appendChild(a);
+    }
+}
+
+function timesFilter() {
+    let input, filter, a, txtValue;
+    input = document.getElementById("timeSearch");
+    filter = input.value.toUpperCase();
+    a = document.getElementById("timesList").getElementsByTagName("a");
+    for (let i = 0; i < a.length; i++) {
+        txtValue = a[i].textContent || a[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        a[i].style.display = "";
+        } else {
+        a[i].style.display = "none";
+        }
     }
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-    const form = document.getElementById('formEntry');
-    form.addEventListener('submit', (e) => {
+    const form0 = document.getElementById('newEntryForm');
+    form0.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        window.jsondata.push(Object.fromEntries(new FormData(form).entries()));
+        window.jsondata.push(Object.fromEntries(new FormData(form0).entries()));
+
+        console.log("submitted...");
+        console.log(Object.fromEntries(new FormData(form0).entries()));
 
         fetch('/newEntry', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(jsondata),
+        })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error(error));
+    });
+
+    const form1 = document.getElementById('deleteEntryForm');
+    form1.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const toDelete = Object.fromEntries(new FormData(form1).entries());
+        for(let entry in jsondata){
+            if(jsondata[entry].Team==toDelete.Team && jsondata[entry].Time==toDelete.Time && jsondata[entry].Room==toDelete.Room){
+                jsondata.splice(entry,1);
+            }
+        }
+        
+        fetch('/deleteEntry', {
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(jsondata),
         })

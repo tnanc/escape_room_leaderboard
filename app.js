@@ -13,10 +13,22 @@ app.listen(8080, () => {
 
 app.post("/newEntry", function(req,res){
     const jsonData = JSON.stringify(req.body);
-    res.send(jsonData);
 
     fs.writeFile("./public/leaderboard.json", jsonData, function (err) {
         if (err) throw err;
-        console.log('Saved!');
-      });
+        console.log('New Entry Added!');
+    });
+
+    res.send(jsonData);
+});
+
+app.delete("/deleteEntry", function(req,res){
+    const jsonData = JSON.stringify(req.body);
+
+    fs.writeFile("./public/leaderboard.json", jsonData, function (err) {
+        if (err) throw err;
+        console.log('Entry Deleted!');
+    });
+
+    res.send(jsonData);
 });

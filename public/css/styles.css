@@ -213,11 +213,11 @@ button:hover, .roomDrop:focus {
     font-size: medium;
 }
 
-.dropdown a:hover {background-color: var(--tertiary-color);}
+.room-content a:hover {background-color: var(--tertiary-color);}
 
 .show {display: block;}
 
-.newEntry {
+#modal {
     display: none;
     position: fixed;
     z-index: 4;
@@ -227,15 +227,24 @@ button:hover, .roomDrop:focus {
     height: 100%;
     background-color: #000000AA;
     animation: fadeIn 1s;
-  }
+}
   
-  .newEntry-content {
+.modal-content {
+    display: flex;
+    flex-direction: column;
     background-color: #fefefe;
     margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-  }
+}
+
+.close{
+    cursor: pointer;
+    font-size: xx-large;
+    align-self: flex-end;
+    color: black;
+}
 
 @keyframes fadeIn {
     from {opacity: 0;}

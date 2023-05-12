@@ -108,21 +108,32 @@
                     </div>
                 </div>
                 <div class="menu-container">
-                    <button onclick="toggleNewEntry(true)">Add Entry</button>
+                    <button onclick="toggleModal('add')">Add Entry</button>
+                    <button onclick="toggleModal('delete')">Delete Entry</button>
                 </div>
             </div>
 
-            <div id="newEntry" class="newEntry">
-
+            <div id="modal">
                 <!-- Modal content -->
-                <div class="newEntry-content" style="display:flex; flex-direction: column;">
-                  <span class="closeNewEntry" style="cursor: pointer; font-size: xx-large;align-self: flex-end;color:black;" onclick="toggleNewEntry(false)">&times;</span>
-                  <form action="/newEntry" method="post" id="formEntry">
-                    <select name="Room" id="roomSelect"></select>
-                    <input type="text" name="Team" placeholder="Team Name"/>
-                    <input type="text" name="Time" placeholder="Time"/>
-                    <button type="submit">New Entry</button>
-                  </form>
+                <div id="add-content" class="modal-content">
+                    <span class="close" onclick="toggleModal('close')">&times;</span>
+                    <form action="/newEntry" method="post" id="newEntryForm">
+                        <select name="Room" class="roomSelect"></select>
+                        <input type="text" name="Team" placeholder="Team Name"/>
+                        <input type="text" name="Time" placeholder="Time"/>
+                        <button type="submit">New Entry</button>
+                    </form>
+                </div>
+
+                <div id="delete-content" class="modal-content">
+                    <span class="close" onclick="toggleModal('close')">&times;</span>
+                    <form action="/deleteEntry" method="delete" id="deleteEntryForm">
+                        <select name="Room" class="roomSelect" onchange="populateTimeList();"></select>
+                        <input name="Team" type="text" placeholder="Search" id="timeSearch" onkeyup="timesFilter()" />
+                        <input name="Time" type="text" placeholder="Time" id="timeTime" readonly />
+                        <div id="timesList" style="display:grid;grid-template-columns: repeat(5, 1fr);grid-gap: 10px;"></div>
+                        <button type="submit">Delete Entry</button>
+                    </form>
                 </div>
             </div>
         </main>
