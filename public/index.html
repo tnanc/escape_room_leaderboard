@@ -100,11 +100,11 @@
                     <button onclick="toggleRoomDrop()" class="roomDrop">Display Room...</button>
                     <div id="roomsList" class="room-content">
                       <input type="text" placeholder="Search" id="roomSearch" onkeyup="roomFilter()">
-                      <!-- TODO: add js to autopopulate new a elements and append them as children (one for each room) -->
+                      <!-- TODO: add js to autopopulate new a elements and append them as children (one for each room)
                       <a onclick="displayRoom('Ghostly Figures')" style="cursor:pointer;">Ghostly Figures</a>
                       <a onclick="displayRoom('Game On')" style="cursor:pointer;">Game On</a>
                       <a onclick="displayRoom('Teacher\'s Pet')" style="cursor:pointer;">Teacher's Pet</a>
-                      <a onclick="displayRoom('Where\'s The Remote')" style="cursor:pointer;">Where's The Remote</a>
+                      <a onclick="displayRoom('Where\'s The Remote')" style="cursor:pointer;">Where's The Remote</a> -->
                     </div>
                 </div>
                 <div class="menu-container">
@@ -118,7 +118,7 @@
                 <div id="add-content" class="modal-content">
                     <span class="close" onclick="toggleModal('close')">&times;</span>
                     <form action="/newEntry" method="post" id="newEntryForm">
-                        <select name="Room" class="roomSelect"></select>
+                        <select name="Room" class="roomSelect" onchange="newRoomBox();"></select>
                         <input type="text" name="Team" placeholder="Team Name"/>
                         <input type="text" name="Time" placeholder="Time"/>
                         <button type="submit">New Entry</button>

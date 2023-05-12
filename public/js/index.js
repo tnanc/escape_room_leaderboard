@@ -21,13 +21,24 @@ var roomArray = [];
 var roomToShow = 0;
 var jsondata;
 
-fetch("../leaderboard.json")
-.then(response => response.json())
-.then(data => {
-    jsondata = data;
-    for(let index in data){
+var timer;
+
+fetch('/allEntries', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+})
+.then((response) => response.json())
+.then((data) => {jsondata = data; parseIncomingData(); })
+.catch((error) => console.error(error));
+
+function parseIncomingData(){
+    rooms = [];
+    roomArray = [];
+    roomToShow = 0;
+
+    for(let index in jsondata){
         let roomNum;
-        let room = data[index].Room;
+        let room = jsondata[index].Room;
         if(!(rooms.includes(room))){
             window.rooms.push(room);
             window.roomArray.push([]);
@@ -37,7 +48,7 @@ fetch("../leaderboard.json")
         if(roomNum == -1) {
             console.log("Index "+ index+ ": " + room+" is not a real room")
         } else {
-            window.roomArray[roomNum].push(new entry(room,data[index].Team,data[index].Time));
+            window.roomArray[roomNum].push(new entry(room,jsondata[index].Team,jsondata[index].Time));
         }
         
     }
@@ -46,10 +57,25 @@ fetch("../leaderboard.json")
         window.roomArray[arrNum] = mergeSort(window.roomArray[arrNum]);
     }
 
-    displayRoom("Mascot Mania");
-
-})
-.catch(err => console.log(err));
+    const roomsList = document.getElementById("roomsList");
+    while (roomsList.childNodes.length > 2) {
+        roomsList.removeChild(roomsList.lastChild);
+    }
+    for(let room of rooms){
+        const a = document.createElement("a");
+        a.style.cursor = "pointer";
+        a.onclick = ()=>{clearInterval(timer); displayRoom(room)};
+        a.innerHTML = room;
+        roomsList.appendChild(a);
+    }
+    const a = document.createElement("a");
+    a.style.cursor = "pointer";
+    a.onclick = ()=>{clearInterval(timer); displayAllRooms()};
+    a.innerHTML = "All Rooms";
+    roomsList.appendChild(a);
+    
+    displayRoom("Teacher's Pet");
+}
 
 function mergeSort(arr) {
     if (arr.length <= 1) {
@@ -93,7 +119,7 @@ function mergeSort(arr) {
     }
   
     return mergedArr.concat(sortedLeft.slice(leftIndex)).concat(sortedRight.slice(rightIndex));
-  }
+}
   
 
 var open = false;
@@ -136,13 +162,13 @@ function displayRoom(roomName){
             roomLogos[0].src = "../images/GhostlyFigures.jpg";
             roomLogos[1].src = "../images/GhostlyFigures.jpg";
             title.textContent = "Ghostly Figures";
-            roomToShow = 0;
+            roomToShow = 1;
             break;
         case "Game On":
             roomLogos[0].src = "../images/GameOn.jpg";
             roomLogos[1].src = "../images/GameOn.jpg";
             title.textContent = "Game On";
-            roomToShow = 1;
+            roomToShow = 3;
             break;
         case "Where's The Remote":
             roomLogos[0].src = "../images/WheresTheRemote.jpg";
@@ -154,7 +180,7 @@ function displayRoom(roomName){
             roomLogos[0].src = "../images/TeachersPet.jpg";
             roomLogos[1].src = "../images/TeachersPet.jpg";
             title.textContent = "Teacher's Pet";
-            roomToShow = 3;
+            roomToShow = 0;
             break;
         case "Elevated Terror":
             roomToShow = 4;
@@ -166,7 +192,6 @@ function displayRoom(roomName){
             roomToShow = 4;
             break;
         default:
-            r.src = "../images/testImage.jpg";
             break;
     }
 
@@ -187,6 +212,16 @@ function displayRoom(roomName){
     let leaderboard = document.getElementById("leaderboard");
     let height = (window.innerHeight-leaderboard.offsetHeight)/2+document.getElementsByTagName("footer")[0].offsetHeight;
     leaderboard.style.bottom = height+"px";
+}
+
+function displayAllRooms(){
+    let roomIndex = -1;
+    window.timer = setInterval(()=>{
+        if(roomIndex>=rooms.length || roomIndex<0){roomIndex = 0;}
+        else{roomIndex++;}
+        displayRoom(rooms[roomIndex]);
+        
+    },8000);
 }
 
 function toggleModal(operation) {
@@ -216,6 +251,13 @@ function toggleModal(operation) {
         populateRoomRadio();
     } else {
         popup.style.display="none";
+        fetch('/allEntries', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then((response) => response.json())
+        .then((data) => {jsondata = data; parseIncomingData(); })
+        .catch((error) => console.error(error));
     }
 }
 
@@ -230,7 +272,17 @@ function populateRoomRadio(){
             div.appendChild(option);
         }
     }
-    
+    const option = document.createElement("option");
+    option.value = "Other";
+    option.innerHTML = "Other";
+    select[0].appendChild(option);
+}
+
+function newRoomBox(){
+    const select = document.getElementsByClassName("roomSelect")[0];
+    if(select.value=="Other"){
+        
+    }
 }
 
 function populateTimeList(){
@@ -279,8 +331,6 @@ document.addEventListener("DOMContentLoaded",()=>{
 
         window.jsondata.push(Object.fromEntries(new FormData(form0).entries()));
 
-        console.log("submitted...");
-        console.log(Object.fromEntries(new FormData(form0).entries()));
 
         fetch('/newEntry', {
             method: 'POST',
@@ -288,7 +338,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             body: JSON.stringify(jsondata),
         })
         .then((response) => response.json())
-        .then((data) => console.log(data))
+        .then((data) => toggleModal('close'))
         .catch((error) => console.error(error));
     });
 
@@ -309,7 +359,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             body: JSON.stringify(jsondata),
         })
         .then((response) => response.json())
-        .then((data) => console.log(data))
+        .then((data) => toggleModal('close'))
         .catch((error) => console.error(error));
     });
 })

@@ -11,6 +11,15 @@ app.listen(8080, () => {
     console.log('Server is running on localhost:8080');
 });
 
+app.get("/allEntries",function(req,res){
+    let jsonData;
+    fs.readFile("./public/leaderboard.json",(err,data)=>{
+        if (err) throw err;
+        jsonData = data;
+        res.send(JSON.parse(data));
+    });
+});
+
 app.post("/newEntry", function(req,res){
     const jsonData = JSON.stringify(req.body);
 

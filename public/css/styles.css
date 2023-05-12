@@ -232,7 +232,7 @@ button:hover, .roomDrop:focus {
 .modal-content {
     display: flex;
     flex-direction: column;
-    background-color: #fefefe;
+    background-color: var(--tertiary-color);
     margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -243,7 +243,7 @@ button:hover, .roomDrop:focus {
     cursor: pointer;
     font-size: xx-large;
     align-self: flex-end;
-    color: black;
+    color: var(--text-color-header);
 }
 
 @keyframes fadeIn {
