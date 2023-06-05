@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>No Escape Iowa Leaderboard</title>
+
+        <link href="./css/styles.css" rel="stylesheet" type="text/css">
+
+        <script src="./js/index.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <!--
+        Copy/Paste if any additional rooms are added
+            <div class="|insertRoomName|">
+            <table class="leaderboard">
+                <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th>Time</th>
+                </tr>
+                <tr>
+                    <td>1st</td>
+                    <td id="team0"></td>
+                    <td id="time0"></td>
+                </tr>
+                <tr>
+                    <td>2nd</td>
+                    <td id="team1"></td>
+                    <td id="time1"></td>
+                </tr>
+                <tr>
+                    <td>3rd</td>
+                    <td id="team2"></td>
+                    <td id="time2"></td>
+                </tr>
+                <tr>
+                    <td>4th</td>
+                    <td id="team3"></td>
+                    <td id="time3"></td>
+                </tr>
+                <tr>
+                    <td>5th</td>
+                    <td id="team4"></td>
+                    <td id="time4"></td>
+                </tr>
+            </table>
+        </div>
+        -->
+        
+        <main>
+            <header>
+                <h1 style="margin-right:10px;">Leaderboard</h1>
+                <span id="open" onclick="toggleNav()" style="color:white;float:inline-end;cursor:pointer;">&#9776;</span>
+            </header>
+            <div id="leaderboard">
+                <div id="roomContainer" style="display:flex;justify-content: space-around;">
+                    <img class="roomLogo">
+                    <h2 id="roomTitle">Room Name</h2>
+                    <img class="roomLogo">
+                </div>
+                <div id="table" style="display:flex; flex-flow: column no-wrap; justify-content: center;">
+                    <table class="table">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Time</th>
+                        </tr>
+                        <tr>
+                            <td class='rank'></td>
+                            <td class="team"></td>
+                            <td class="time"></td>
+                        </tr>
+                        <tr>
+                            <td class='rank'></td>
+                            <td class="team"></td>
+                            <td class="time"></td>
+                        </tr>
+                        <tr>
+                            <td class='rank'></td>
+                            <td class="team"></td>
+                            <td class="time"></td>
+                        </tr>
+                        <tr>
+                            <td class='rank'></td>
+                            <td class="team"></td>
+                            <td class="time"></td>
+                        </tr>
+                        <tr>
+                            <td class='rank'></td>
+                            <td class="team"></td>
+                            <td class="time"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="nav" class="nav">
+                <div class="menu-container">
+                    <button onclick="toggleRoomDrop()" class="roomDrop">Display Room...</button>
+                    <div id="roomsList" class="room-content">
+                      <input type="text" placeholder="Search" id="roomSearch" onkeyup="roomFilter()">
+                      <!-- TODO: add js to autopopulate new a elements and append them as children (one for each room)
+                      <a onclick="displayRoom('Ghostly Figures')" style="cursor:pointer;">Ghostly Figures</a>
+                      <a onclick="displayRoom('Game On')" style="cursor:pointer;">Game On</a>
+                      <a onclick="displayRoom('Teacher\'s Pet')" style="cursor:pointer;">Teacher's Pet</a>
+                      <a onclick="displayRoom('Where\'s The Remote')" style="cursor:pointer;">Where's The Remote</a> -->
+                    </div>
+                </div>
+                <div class="menu-container">
+                    <button onclick="toggleModal('add')">Add Entry</button>
+                    <button onclick="toggleModal('delete')">Delete Entry</button>
+                </div>
+            </div>
+
+            <div id="modal">
+                <!-- Modal content -->
+                <div id="add-content" class="modal-content">
+                    <span class="close" onclick="toggleModal('close')">&times;</span>
+                    <form action="/newEntry" method="post" id="newEntryForm">
+                        <select name="Room" class="roomSelect" onchange="newRoomBox();"></select>
+                        <input type="text" name="Team" placeholder="Team Name"/>
+                        <input type="text" name="Time" placeholder="Time"/>
+                        <button type="submit">New Entry</button>
+                    </form>
+                </div>
+
+                <div id="delete-content" class="modal-content">
+                    <span class="close" onclick="toggleModal('close')">&times;</span>
+                    <form action="/deleteEntry" method="delete" id="deleteEntryForm">
+                        <select name="Room" class="roomSelect" onchange="populateTimeList();"></select>
+                        <input name="Team" type="text" placeholder="Search" id="timeSearch" onkeyup="timesFilter()" />
+                        <input name="Time" type="text" placeholder="Time" id="timeTime" readonly />
+                        <div id="timesList" style="display:grid;grid-template-columns: repeat(5, 1fr);grid-gap: 10px;"></div>
+                        <button type="submit">Delete Entry</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <div>
+                <img class="neiLogo" src="./images/logo.png">
+                <h1 style="text-align: center; line-height: 1;">No Escape Iowa<br><span style="font-size: medium; font-weight: normal;">(515) 337 - 8770</span></h1>
+                <img class="neilogo" src="./images/logo.png">
+            </div>
+        </footer>
+        
+    </body>
+</html>
