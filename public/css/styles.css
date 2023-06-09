@@ -117,7 +117,7 @@ footer > div{
 }
 
 /* Navigation Bar */
-.nav {
+#nav {
     height: 100%;
     width: 0;
     position: fixed;
@@ -131,7 +131,7 @@ footer > div{
     text-align: center;
 }
 
-.nav a {
+#nav > a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 25px;
@@ -140,7 +140,7 @@ footer > div{
     transition: 0.3s;
 }
 
-.nav a:hover {
+#nav a:hover {
     color: #f1f1f1;
 }
 
@@ -153,12 +153,11 @@ footer > div{
 }
 
 @media screen and (max-height: 450px) {
-    .nav {padding-top: 15px;}
-    .nav a {font-size: 18px;}
+    #nav {padding-top: 15px;}
+    #nav a {font-size: 18px;}
 }
 
-/* Room List Dropdown */
-button {
+.med-button{
     background-color: var(--border-color);
     width: 80%;
     color: black;
@@ -170,8 +169,49 @@ button {
     cursor: pointer;
 }
 
-button:hover, .roomDrop:focus {
+.med-select{
+    background-color: var(--secondary-color);
+    width: 500px;
+    height: 30px;
+    margin: 10px;
+    color: var(--text-color-main);
+    font-family: 'Mochiy Pop One';
+    font-size: 14px;
+    text-align: center;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+}
+
+.med-text-input{
+    background-color: var(--secondary-color);
+    width: 500px;
+    height: 30px;
+    margin: 10px;
+    color: var(--text-color-main);
+    font-family: 'Quantico';
+    font-size: 14px;
+    text-align: left;
+    border: 2px solid var(--border-color);
+}
+
+.sm-text-input{
+    background-color: var(--secondary-color);
+    width: 100px;
+    height: 30px;
+    margin: 10px;
+    color: var(--text-color-main);
+    font-family: 'Quantico';
+    font-size: 14px;
+    text-align: left;
+    border: 2px solid var(--border-color);
+}
+
+.med-button:hover, #roomDrop:focus {
     background-color: #85703b;
+}
+
+.med-select:focus, .med-text-input:focus, .sm-text-input:focus{
+    background-color: #272727;
 }
 
 #roomSearch {
@@ -195,8 +235,10 @@ button:hover, .roomDrop:focus {
 }
 
 .room-content {
-    display: none;
+    display: block;
+    visibility: hidden;
     position: absolute;
+    left: 10px;
     background-color: #585858;
     min-width: 230px;
     overflow: auto;
@@ -215,7 +257,7 @@ button:hover, .roomDrop:focus {
 
 .room-content a:hover {background-color: var(--tertiary-color);}
 
-.show {display: block;}
+.show {visibility: visible;}
 
 #modal {
     display: none;
@@ -230,7 +272,7 @@ button:hover, .roomDrop:focus {
 }
   
 .modal-content {
-    display: flex;
+    display: none;
     flex-direction: column;
     background-color: var(--tertiary-color);
     margin: 5% auto;
@@ -239,14 +281,63 @@ button:hover, .roomDrop:focus {
     width: 80%;
 }
 
+#timesList{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 10px;
+    font-size: 20px;
+    color: var(--text-color-main);
+    font-family: 'Covered By Your Grace';
+}
+
+form{
+    width: 100%;
+    text-align: center;
+}
+
 .close{
     cursor: pointer;
+    width: 50px;
     font-size: xx-large;
     align-self: flex-end;
     color: var(--text-color-header);
 }
 
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: var(--primary-color);
+    text-align: center;
+    font-family: 'Quantico';
+    font-size: x-large;
+    color: var(--text-color-header);
+    -webkit-text-fill-color: white;
+    -webkit-text-stroke: 1px;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 10;
+    left: 50%;
+    bottom: 150px;
+  }
+  
+  #snackbar.show {
+    visibility: visible;
+    animation: showSnack 0.5s, hideSnack 0.5s 2.5s;
+  }
+
 @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity:1 ;}    
-} 
+}
+
+@keyframes showSnack {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 150px; opacity: 1;}
+}
+  
+@keyframes hideSnack {
+    from {bottom: 150px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}

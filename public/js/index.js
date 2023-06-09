@@ -79,19 +79,16 @@ function parseIncomingData(){
 
 function mergeSort(arr) {
     if (arr.length <= 1) {
-      return arr; // base case: arrays with 0 or 1 element are already sorted
+      return arr;
     }
   
-    // Split the array into two halves
     const middleIndex = Math.floor(arr.length / 2);
     const leftHalf = arr.slice(0, middleIndex);
     const rightHalf = arr.slice(middleIndex);
   
-    // Recursively sort each half
     const sortedLeft = mergeSort(leftHalf);
     const sortedRight = mergeSort(rightHalf);
   
-    // Merge the two sorted halves back together
     const mergedArr = [];
     let leftIndex = 0;
     let rightIndex = 0;
@@ -137,7 +134,7 @@ function toggleNav(){
 
 function toggleRoomDrop() {
     document.getElementById("roomsList").classList.toggle("show");
-  }
+}
   
 function roomFilter() {
     let input, filter, a, txtValue;
@@ -151,6 +148,21 @@ function roomFilter() {
         } else {
         a[i].style.display = "none";
         }
+    }
+}
+
+function clearBoard(){
+    let ranks = document.getElementsByClassName("rank");
+    let teams = document.getElementsByClassName("team");
+    let times = document.getElementsByClassName("time");
+    if(ranks.length==teams.length && teams.length==times.length){
+        for(let j=1; j<=ranks.length; j++){
+            ranks[j-1].textContent = j;
+            teams[j-1].textContent = "";
+            times[j-1].textContent = "";
+        }
+    } else {
+        console.log("Error: board lengths differ ("+ranks.length+", "+teams.length+", "+times.length+")");
     }
 }
 
@@ -194,6 +206,8 @@ function displayRoom(roomName){
         default:
             break;
     }
+
+    clearBoard();
 
     let ranks = document.getElementsByClassName("rank");
     let teams = document.getElementsByClassName("team");
@@ -247,7 +261,7 @@ function toggleModal(operation) {
 
     if(popup.style.display=="none"){
         popup.style.display="block";
-        content.style.display="block";
+        content.style.display="flex";
         populateRoomRadio();
     } else {
         popup.style.display="none";
@@ -297,15 +311,31 @@ function populateTimeList(){
         } else { i=-1; }
     }
     if(i<0){return ;}
+    document.getElementById("delDirections").textContent = "Choose an entry below:";
+    let j = 1;
+    let maxEntries = 50;
     for(let entry of roomArray[i]){
-        const a = document.createElement("a");
-        a.innerHTML = entry.Team+" | "+entry.Time;
-        a.style.cursor = "pointer";
-        a.onclick = () => {
-            document.getElementById("timeSearch").value = a.textContent.split(" | ")[0];
-            document.getElementById("timeTime").value = a.textContent.split(" | ")[1];
+        if(j > maxEntries){
+            const p = document.createElement("p");
+            const diff = roomArray[i].length-maxEntries;
+            p.innerHTML = diff==1 ? "Type to search through 1 more entry" : "Type to search through "+diff+" more entries";
+            p.style.color = "white";
+            list.appendChild(p);
+            return ;
+        } else {
+            const a = document.createElement("a");
+            a.innerHTML = entry.Team+" | "+entry.Time;
+            a.style = "cursor:pointer;color:white;";
+            a.onmouseover = ()=>{a.style.color = "lightgray";}
+            a.onmouseleave = ()=>{a.style.color = "white";}
+            a.onclick = () => {
+                document.getElementById("timeSearch").value = a.textContent.split(" | ")[0];
+                document.getElementById("timeTime").value = a.textContent.split(" | ")[1];
+            }
+            list.appendChild(a);
+            j++;
         }
-        list.appendChild(a);
+        
     }
 }
 
@@ -314,6 +344,9 @@ function timesFilter() {
     input = document.getElementById("timeSearch");
     filter = input.value.toUpperCase();
     a = document.getElementById("timesList").getElementsByTagName("a");
+    for(let p of document.getElementById("timesList").getElementsByTagName("p")){
+        p.style.display = filter=="" ? "" : "none";
+    }
     for (let i = 0; i < a.length; i++) {
         txtValue = a[i].textContent || a[i].innerText;
         if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -322,6 +355,13 @@ function timesFilter() {
         a[i].style.display = "none";
         }
     }
+}
+
+function snackMessage(message){
+    var snack = document.getElementById("snackbar");
+    snack.textContent = message;
+    snack.className = "show";
+    setTimeout(function(){ snack.className = snack.className.replace("show", ""); }, 3000);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -338,7 +378,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             body: JSON.stringify(jsondata),
         })
         .then((response) => response.json())
-        .then((data) => toggleModal('close'))
+        .then((data) => {snackMessage("Entry Added");toggleModal('close');})
         .catch((error) => console.error(error));
     });
 
@@ -347,10 +387,19 @@ document.addEventListener("DOMContentLoaded",()=>{
         e.preventDefault();
 
         const toDelete = Object.fromEntries(new FormData(form1).entries());
+        
+        let deleted = false;
         for(let entry in jsondata){
             if(jsondata[entry].Team==toDelete.Team && jsondata[entry].Time==toDelete.Time && jsondata[entry].Room==toDelete.Room){
                 jsondata.splice(entry,1);
+                deleted = true;
+                break;
             }
+        }
+        if(!deleted){
+            snackMessage("Entry Not Found");
+            toggleModal('close');
+            return ;
         }
         
         fetch('/deleteEntry', {
@@ -359,7 +408,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             body: JSON.stringify(jsondata),
         })
         .then((response) => response.json())
-        .then((data) => toggleModal('close'))
+        .then((data) => {snackMessage("Entry Deleted");toggleModal('close');})
         .catch((error) => console.error(error));
     });
 })
