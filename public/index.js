@@ -1,4 +1,3 @@
-//Server at 10.11.40.129
 class entry{
     constructor(Room,Team,Time){
         this.Room = Room;
@@ -13,59 +12,97 @@ class entry{
     }
 };
 
+class room{
+    constructor(Name, Image){
+        this.Name = Name;
+        this.Image = Image;
+        this.Entries = [];
+    }
+    addEntry(Entry){
+        if(Entry instanceof entry){
+            this.Entries.push(Entry);
+            console.log("Entry for "+Entry.Team+" added to "+this.Name);
+        } else {
+            console.log("Not a valid entry object");
+        }
+    }
+    removeEntry(Entry){
+        if(Entry instanceof entry){
+            if(this.Entries.includes(Entry)){
+                this.Entries.splice(this.Entries.indexOf(Entry),1);
+                console.log("Entry for "+Entry.Team+" deleted from "+this.Name);
+            } else {
+                console.log("Room "+this.Name+" does not contain an entry for "+Entry.Team);
+            }
+        } else {
+            console.log("Not a valid entry object");
+        }
+    }
+    clearEntries(){
+        this.Entries = [];
+    }
+    sort(){
+        mergeSort(Entries);
+    }
+}
+
 //window height / 2 - height of #leaderboard
 
 //ghostly, game, remote, teacher, elevate, mascot
 var rooms = [];
-var roomArray = [];
-var roomToShow = 0;
-var jsondata;
+var rawEntries;
+var rawRooms;
 
 var timer;
+
+fetch('/allRooms', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+})
+.then((response) => response.json())
+.then((data) => {rawRooms = data; parseRoomData(); })
+.catch((error) => console.error(error));
+
+function parseRoomData(){
+    for(let index in rawRooms){
+        window.rooms.push(new room(rawRooms[index].Name,"./images/"+rawRooms[index].Image));
+    }
+}
 
 fetch('/allEntries', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
 })
 .then((response) => response.json())
-.then((data) => {jsondata = data; parseIncomingData(); })
+.then((data) => {rawEntries = data; parseEntryData(); })
 .catch((error) => console.error(error));
 
-function parseIncomingData(){
-    rooms = [];
-    roomArray = [];
-    roomToShow = 0;
-
-    for(let index in jsondata){
-        let roomNum;
-        let room = jsondata[index].Room;
-        if(!(rooms.includes(room))){
-            window.rooms.push(room);
-            window.roomArray.push([]);
+function parseEntryData(){
+    for(let index in rawEntries){
+        let Room = hasRoom(rawEntries[index].Room);
+        if(Room === null){
+            console.log("Room "+rawEntries[index].Room+" does not exist");
         }
-        roomNum = rooms.indexOf(room);
-        
-        if(roomNum == -1) {
-            console.log("Index "+ index+ ": " + room+" is not a real room")
-        } else {
-            window.roomArray[roomNum].push(new entry(room,jsondata[index].Team,jsondata[index].Time));
-        }
-        
+        Room.addEntry(new entry(Room.Name,rawEntries[index].Team,rawEntries[index].Time));
     }
     
-    for(let arrNum in roomArray){
-        window.roomArray[arrNum] = mergeSort(window.roomArray[arrNum]);
+    for(let Room in rooms){
+        if(Room instanceof room){
+            Room.sort();
+        } else {
+            console.log("Room is not a room:\n"+Room);
+        }
     }
 
     const roomsList = document.getElementById("roomsList");
     while (roomsList.childNodes.length > 2) {
         roomsList.removeChild(roomsList.lastChild);
     }
-    for(let room of rooms){
+    for(let Room of rooms){
         const a = document.createElement("a");
         a.style.cursor = "pointer";
-        a.onclick = ()=>{clearInterval(timer); displayRoom(room)};
-        a.innerHTML = room;
+        a.onclick = ()=>{clearInterval(timer); displayRoom(rooms.indexOf(Room))};
+        a.innerHTML = Room.Name;
         roomsList.appendChild(a);
     }
     const a = document.createElement("a");
@@ -74,7 +111,7 @@ function parseIncomingData(){
     a.innerHTML = "All Rooms";
     roomsList.appendChild(a);
     
-    displayRoom("Teacher's Pet");
+    displayRoom(0);
 }
 
 function mergeSort(arr) {
@@ -116,6 +153,15 @@ function mergeSort(arr) {
     }
   
     return mergedArr.concat(sortedLeft.slice(leftIndex)).concat(sortedRight.slice(rightIndex));
+}
+
+function hasRoom(Name){
+    for(let Room of rooms){
+        if(Room instanceof room && Room.Name == Name){
+            return Room;
+        }
+    }
+    return null;
 }
   
 
@@ -166,61 +212,31 @@ function clearBoard(){
     }
 }
 
-function displayRoom(roomName){
+function displayRoom(index){
     let roomLogos = document.getElementsByClassName("roomLogo");
     let title = document.getElementById("roomTitle");
-    switch(roomName){
-        case "Ghostly Figures":
-            roomLogos[0].src = "../images/GhostlyFigures.jpg";
-            roomLogos[1].src = "../images/GhostlyFigures.jpg";
-            title.textContent = "Ghostly Figures";
-            roomToShow = 1;
-            break;
-        case "Game On":
-            roomLogos[0].src = "../images/GameOn.jpg";
-            roomLogos[1].src = "../images/GameOn.jpg";
-            title.textContent = "Game On";
-            roomToShow = 3;
-            break;
-        case "Where's The Remote":
-            roomLogos[0].src = "../images/WheresTheRemote.jpg";
-            roomLogos[1].src = "../images/WheresTheRemote.jpg";
-            title.textContent = "Where's The Remote";
-            roomToShow = 2;
-            break;
-        case "Teacher's Pet":
-            roomLogos[0].src = "../images/TeachersPet.jpg";
-            roomLogos[1].src = "../images/TeachersPet.jpg";
-            title.textContent = "Teacher's Pet";
-            roomToShow = 0;
-            break;
-        case "Elevated Terror":
-            roomToShow = 4;
-            break;
-        case "Mascot Mania":
-            roomLogos[0].src = "../images/MascotMania.jpg";
-            roomLogos[1].src = "../images/MascotMania.jpg";
-            title.textContent = "Mascot Mania";
-            roomToShow = 4;
-            break;
-        default:
-            break;
-    }
+    let Room = rooms[index];
+    if(Room instanceof room){
+        roomLogos[0].src = Room.Image;
+        roomLogos[1].src = Room.Image;
+        title.textContent = Room.Name;
 
-    clearBoard();
+        clearBoard();
 
-    let ranks = document.getElementsByClassName("rank");
-    let teams = document.getElementsByClassName("team");
-    let times = document.getElementsByClassName("time");
-    let room = window.roomArray[window.roomToShow];
-    for(let j=1; j<=room.length; j++){
-        if(j<=5){
-            ranks[j-1].textContent = j;
-            teams[j-1].textContent = room[j-1].Team;
-            times[j-1].textContent = room[j-1].Time;
-        } else {
-            break;
+        let ranks = document.getElementsByClassName("rank");
+        let teams = document.getElementsByClassName("team");
+        let times = document.getElementsByClassName("time");
+        for(let j=1; j<=Room.Entries.length; j++){
+            if(j<=5){
+                ranks[j-1].textContent = j;
+                teams[j-1].textContent = Room.Entries[j-1].Team;
+                times[j-1].textContent = Room.Entries[j-1].Time;
+            } else {
+                break;
+            }
         }
+    } else {
+        console.log("\nRoom is not a room: \n"+Room);
     }
 
     let leaderboard = document.getElementById("leaderboard");
@@ -233,7 +249,7 @@ function displayAllRooms(){
     window.timer = setInterval(()=>{
         if(roomIndex>=rooms.length || roomIndex<0){roomIndex = 0;}
         else{roomIndex++;}
-        displayRoom(rooms[roomIndex]);
+        displayRoom(roomIndex);
         
     },8000);
 }
@@ -270,7 +286,7 @@ function toggleModal(operation) {
             headers: { 'Content-Type': 'application/json' }
         })
         .then((response) => response.json())
-        .then((data) => {jsondata = data; parseIncomingData(); })
+        .then((data) => {rawEntries = data; parseEntryData(); })
         .catch((error) => console.error(error));
     }
 }
@@ -279,10 +295,10 @@ function populateRoomRadio(){
     const select = document.getElementsByClassName("roomSelect");
     for(let div of select){
         div.innerHTML = "";
-        for(let room of rooms){
+        for(let Room of rooms){
             const option = document.createElement("option");
-            option.value = room;
-            option.innerHTML = room;
+            option.value = Room.Name;
+            option.innerHTML = Room.Name;
             div.appendChild(option);
         }
     }
@@ -304,9 +320,9 @@ function populateTimeList(){
     const select = document.getElementsByClassName('roomSelect')[1];
     list.innerHTML = "";
     let i;
-    for(let room in rooms){
-        if(rooms[room] == select.value){
-            i = room;
+    for(let Room in rooms){
+        if(Room.Name == select.value){
+            i = Room;
             break;
         } else { i=-1; }
     }
@@ -314,10 +330,10 @@ function populateTimeList(){
     document.getElementById("delDirections").textContent = "Choose an entry below:";
     let j = 1;
     let maxEntries = 50;
-    for(let entry of roomArray[i]){
+    for(let entry of i.Entries){
         if(j > maxEntries){
             const p = document.createElement("p");
-            const diff = roomArray[i].length-maxEntries;
+            const diff = i.Entries.length-maxEntries;
             p.innerHTML = diff==1 ? "Type to search through 1 more entry" : "Type to search through "+diff+" more entries";
             p.style.color = "white";
             list.appendChild(p);
@@ -369,13 +385,13 @@ document.addEventListener("DOMContentLoaded",()=>{
     form0.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        window.jsondata.push(Object.fromEntries(new FormData(form0).entries()));
+        window.rawEntries.push(Object.fromEntries(new FormData(form0).entries()));
 
 
         fetch('/newEntry', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(jsondata),
+            body: JSON.stringify(rawEntries),
         })
         .then((response) => response.json())
         .then((data) => {snackMessage("Entry Added");toggleModal('close');})
@@ -389,9 +405,9 @@ document.addEventListener("DOMContentLoaded",()=>{
         const toDelete = Object.fromEntries(new FormData(form1).entries());
         
         let deleted = false;
-        for(let entry in jsondata){
-            if(jsondata[entry].Team==toDelete.Team && jsondata[entry].Time==toDelete.Time && jsondata[entry].Room==toDelete.Room){
-                jsondata.splice(entry,1);
+        for(let entry in rawEntries){
+            if(rawEntries[entry].Team==toDelete.Team && rawEntries[entry].Time==toDelete.Time && rawEntries[entry].Room==toDelete.Room){
+                rawEntries.splice(entry,1);
                 deleted = true;
                 break;
             }
@@ -405,7 +421,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         fetch('/deleteEntry', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(jsondata),
+            body: JSON.stringify(rawEntries),
         })
         .then((response) => response.json())
         .then((data) => {snackMessage("Entry Deleted");toggleModal('close');})

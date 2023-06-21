@@ -4,7 +4,7 @@
 @import url("https://fonts.googleapis.com/css?family=Covered By Your Grace");
 
 :root{
-    --no-escape-logo: url("../images/logo.png");
+    --no-escape-logo: url("./images/logo.png");
 
     --primary-color: #141414;
     --border-color: #ac9250;
@@ -167,6 +167,13 @@ footer > div{
     margin: 10px;
     border: none;
     cursor: pointer;
+    text-align: center;
+}
+
+.med-button > i{
+    margin-right: 10px;
+    font-size: 25px;
+    vertical-align: text-bottom;
 }
 
 .med-select{

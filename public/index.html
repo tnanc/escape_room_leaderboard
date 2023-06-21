@@ -4,9 +4,10 @@
         <meta charset="utf-8">
         <title>No Escape Iowa Leaderboard</title>
 
-        <link href="./css/styles.css" rel="stylesheet" type="text/css">
+        <link href="./styles.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-        <script src="./js/index.js"></script>
+        <script src="./index.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     </head>
@@ -59,7 +60,7 @@
             </div>
             <div id="nav">
                 <div class="menu-container">
-                    <button onclick="toggleRoomDrop()" id="roomDrop" class="med-button">Display Room...</button>
+                    <button onclick="toggleRoomDrop()" id="roomDrop" class="med-button"><i class="fa fa-desktop" aria-hidden="true"></i>Display Room...</button>
                     <div id="roomsList" class="room-content">
                       <input type="text" placeholder="Search" id="roomSearch" onkeyup="roomFilter()">
                     </div>
@@ -67,6 +68,9 @@
                 <div class="menu-container">
                     <button onclick="toggleModal('add')" class="med-button">Add Entry</button>
                     <button onclick="toggleModal('delete')" class="med-button">Delete Entry</button>
+                    <button onclick="toggleModal('add')" class="med-button"><i class="fa fa-cubes" aria-hidden="true"></i>Room Options</button>
+                    <button onclick="toggleModal('delete')" class="med-button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Entry Options</button>
+                    <button onclick="toggleModal('add')" class="med-button"><i class="fa fa-cog" aria-hidden="true"></i>Settings</button>
                 </div>
             </div>
 
