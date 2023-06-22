@@ -55,6 +55,18 @@ var rawRooms;
 
 var timer;
 
+fetch('/settings', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+})
+.then((response) => response.json())
+.then((data) => {rawRooms = data; applySettings(); })
+.catch((error) => console.error(error));
+
+function applySettings(){
+    //TODO
+}
+
 fetch('/allRooms', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
