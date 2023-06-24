@@ -21,7 +21,6 @@ class room{
     addEntry(Entry){
         if(Entry instanceof entry){
             this.Entries.push(Entry);
-            console.log("Entry for "+Entry.Team+" added to "+this.Name);
         } else {
             console.log("Not a valid entry object");
         }
@@ -30,7 +29,6 @@ class room{
         if(Entry instanceof entry){
             if(this.Entries.includes(Entry)){
                 this.Entries.splice(this.Entries.indexOf(Entry),1);
-                console.log("Entry for "+Entry.Team+" deleted from "+this.Name);
             } else {
                 console.log("Room "+this.Name+" does not contain an entry for "+Entry.Team);
             }
@@ -90,6 +88,11 @@ fetch('/allEntries', {
 .catch((error) => console.error(error));
 
 function parseEntryData(){
+    for(let Room of rooms){
+        if(Room instanceof room){
+            Room.clearEntries();
+        }
+    }
     for(let index in rawEntries){
         let Room = hasRoom(rawEntries[index].Room);
         if(Room === null){
@@ -106,22 +109,22 @@ function parseEntryData(){
         }
     }
 
-    const roomsList = document.getElementById("roomsList");
-    while (roomsList.childNodes.length > 2) {
-        roomsList.removeChild(roomsList.lastChild);
+    const roomList = document.getElementById("roomList");
+    while (roomList.childNodes.length > 2) {
+        roomList.removeChild(roomList.lastChild);
     }
     for(let Room of rooms){
         const a = document.createElement("a");
         a.style.cursor = "pointer";
         a.onclick = ()=>{clearInterval(timer); displayRoom(rooms.indexOf(Room))};
         a.innerHTML = Room.Name;
-        roomsList.appendChild(a);
+        roomList.appendChild(a);
     }
     const a = document.createElement("a");
     a.style.cursor = "pointer";
     a.onclick = ()=>{clearInterval(timer); displayAllRooms()};
     a.innerHTML = "All Rooms";
-    roomsList.appendChild(a);
+    roomList.appendChild(a);
     
     displayRoom(0);
 }
@@ -191,22 +194,7 @@ function toggleNav(){
 }
 
 function toggleRoomDrop() {
-    document.getElementById("roomsList").classList.toggle("show");
-}
-  
-function roomFilter() {
-    let input, filter, a, txtValue;
-    input = document.getElementById("roomSearch");
-    filter = input.value.toUpperCase();
-    a = document.getElementById("roomsList").getElementsByTagName("a");
-    for (let i = 0; i < a.length; i++) {
-        txtValue = a[i].textContent || a[i].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        a[i].style.display = "";
-        } else {
-        a[i].style.display = "none";
-        }
-    }
+    document.getElementById("roomList").classList.toggle("show");
 }
 
 function clearBoard(){
@@ -267,32 +255,34 @@ function displayAllRooms(){
 }
 
 function toggleModal(operation) {
-    let popup = document.getElementById("modal");
-    let content;
-    for(let div of popup.children){
-        div.style.display = "none";
-    }
-    switch(operation){
-        case 'add':
-            content = document.getElementById("add-content");
-            break;
-        case 'update':
-            content = document.getElementById("update-content");
-            document.getElementById("changeTimeTo").style.display = "none";
-            break;
-        case 'delete':
-            content = document.getElementById("delete-content");
-            break;
-        default:
-            break;
+    let popup = document.getElementById("modal"), content, room=["room","r","roomDisplay"], entry=["entry","e","entryDisplay"];
+    hideAllMaps();
+
+    /*
+    TODO
+    make modal pop up
+    set modalView array [false,false,false] = [room,entry,settings]
+    when add is clicked: display add for room if modalView[0] is true & entry if modalView[1] is true
+    when update is clicked: display update for room if modalView[0] is true & entry if modalView[1] is true
+    when delete is clicked: display delete for room if modalView[0] is true & entry if modalView[1] is true
+    */
+    
+    if(room.includes(operation)){
+        for(let form of document.getElementsByClassName("roomForm")){
+            form.classList.toggle("show");
+        }
+    } else if(entry.includes(operation)){
+        for(let form of document.getElementsByClassName("entryForm")){
+            form.classList.toggle("show");
+        }
+    } else {
+        console.log("Not a valid modal display");
     }
 
-    if(popup.style.display=="none"){
-        popup.style.display="block";
-        content.style.display="flex";
+    popup.classList.toggle("show");
+    if(popup.classList.contains("show")){
         populateRoomRadio();
     } else {
-        popup.style.display="none";
         fetch('/allEntries', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
@@ -300,6 +290,52 @@ function toggleModal(operation) {
         .then((response) => response.json())
         .then((data) => {rawEntries = data; parseEntryData(); })
         .catch((error) => console.error(error));
+    }
+}
+
+function hideAllMaps(){
+    for(let map of document.getElementsByClassName("map")){
+        if(map.classList.contains("show")){
+            map.classList.remove("show");
+            console.log("Removed show from classlist for map");
+        }
+        for(let child of map.children){
+            if(child.classList.contains("show")){
+                child.classList.remove("show");
+                console.log("Removed show from classlist for form");
+            }
+        }
+    }
+}
+
+function modalDisplay(type){
+    type = type.toLowerCase();
+    let add=[0,"a","add","c"], update=[1,"u","update"],del=[2,"d","delete","del"];
+
+    for(let e of document.getElementsByClassName("displayButton")){
+        if(e.classList.contains("selected")){
+            e.classList.remove("selected");
+        }
+    }
+    if(add.includes(type)){
+        document.getElementById("AddMap").classList.toggle("show");
+        document.getElementsByClassName("DisplayButton")[0].classList.toggle("selected");
+    } else if(update.includes(type)){
+        document.getElementById("UpdateMap").classList.toggle("show");
+        document.getElementsByClassName("DisplayButton")[1].classList.toggle("selected");
+    } else if(del.includes(type)){
+        document.getElementById("DeleteMap").classList.toggle("show");
+        document.getElementsByClassName("DisplayButton")[2].classList.toggle("selected");
+    } else {
+        console.log("Invalid Display Type");
+    }
+}
+
+function removeUploadFiles(){
+    for(let e of document.getElementsByTagName("input")){
+        if(e.type.toLowerCase()==="file"){
+            e.value = null;
+        }
     }
 }
 
@@ -367,24 +403,6 @@ function populateTimeList(){
     }
 }
 
-function timesFilter() {
-    let input, filter, a, txtValue;
-    input = document.getElementById("timeSearch");
-    filter = input.value.toUpperCase();
-    a = document.getElementById("timesList").getElementsByTagName("a");
-    for(let p of document.getElementById("timesList").getElementsByTagName("p")){
-        p.style.display = filter=="" ? "" : "none";
-    }
-    for (let i = 0; i < a.length; i++) {
-        txtValue = a[i].textContent || a[i].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        a[i].style.display = "";
-        } else {
-        a[i].style.display = "none";
-        }
-    }
-}
-
 function snackMessage(message){
     var snack = document.getElementById("snackbar");
     snack.textContent = message;
@@ -393,6 +411,24 @@ function snackMessage(message){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
+    for(let e of document.getElementsByClassName("searchFilter")){
+        if(e.tagName.toLowerCase()==="input" && e.type.toLowerCase()==="text"){
+            e.addEventListener("keyup",function(){
+                let filter, a, txtValue;
+                filter = e.value.toUpperCase();
+                a = document.getElementById(e.id.replace("Search","List")).getElementsByTagName("a");
+                for (let i = 0; i < a.length; i++) {
+                    txtValue = a[i].textContent || a[i].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    a[i].style.display = "";
+                    } else {
+                    a[i].style.display = "none";
+                    }
+                }
+            });
+        }
+    }
+
     const form0 = document.getElementById('newEntryForm');
     form0.addEventListener('submit', (e) => {
         e.preventDefault();
