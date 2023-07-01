@@ -326,7 +326,7 @@ footer > div{
     width: 80%;
 }
 
-#timeList{
+.entryList{
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-gap: 10px;
@@ -408,13 +408,10 @@ form > .med-button{
 }
 
 .roomForm, .entryForm{
-    visibility: hidden;
-}
-
-.map{
     display: none;
 }
-.map.show{
+
+.roomForm.show, .entryForm.show{
     display: block;
 }
 

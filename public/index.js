@@ -13,10 +13,10 @@ class entry{
 };
 
 class room{
+    Entries = [];
     constructor(Name, Image){
         this.Name = Name;
         this.Image = Image;
-        this.Entries = [];
     }
     addEntry(Entry){
         if(Entry instanceof entry){
@@ -40,7 +40,7 @@ class room{
         this.Entries = [];
     }
     sort(){
-        mergeSort(Entries);
+        this.Entries = mergeSort(this.Entries);
     }
 }
 
@@ -50,6 +50,8 @@ class room{
 var rooms = [];
 var rawEntries;
 var rawRooms;
+
+var modalView = [false,false,false];
 
 var timer;
 
@@ -74,6 +76,7 @@ fetch('/allRooms', {
 .catch((error) => console.error(error));
 
 function parseRoomData(){
+    window.rooms = [];
     for(let index in rawRooms){
         window.rooms.push(new room(rawRooms[index].Name,"./images/"+rawRooms[index].Image));
     }
@@ -97,11 +100,12 @@ function parseEntryData(){
         let Room = hasRoom(rawEntries[index].Room);
         if(Room === null){
             console.log("Room "+rawEntries[index].Room+" does not exist");
+        } else {
+            Room.addEntry(new entry(Room.Name,rawEntries[index].Team,rawEntries[index].Time));
         }
-        Room.addEntry(new entry(Room.Name,rawEntries[index].Team,rawEntries[index].Time));
     }
     
-    for(let Room in rooms){
+    for(let Room of window.rooms){
         if(Room instanceof room){
             Room.sort();
         } else {
@@ -150,21 +154,21 @@ function mergeSort(arr) {
         let rightMins = parseInt(sortedRight[rightIndex].Time.split(":")[0],10);
         if(leftMins == rightMins){
             let leftSecs = parseInt(sortedLeft[leftIndex].Time.split(":")[1],10);
-        let rightSecs = parseInt(sortedRight[rightIndex].Time.split(":")[1],10);
-        if (leftSecs < rightSecs) {
+            let rightSecs = parseInt(sortedRight[rightIndex].Time.split(":")[1],10);
+            if (leftSecs < rightSecs) {
+                mergedArr.push(sortedLeft[leftIndex]);
+                leftIndex++;
+            } else {
+                mergedArr.push(sortedRight[rightIndex]);
+                rightIndex++;
+            }
+        } else if (leftMins < rightMins) {
             mergedArr.push(sortedLeft[leftIndex]);
             leftIndex++;
-          } else {
+        } else {
             mergedArr.push(sortedRight[rightIndex]);
             rightIndex++;
-          }
-        } else if (leftMins < rightMins) {
-        mergedArr.push(sortedLeft[leftIndex]);
-        leftIndex++;
-      } else {
-        mergedArr.push(sortedRight[rightIndex]);
-        rightIndex++;
-      }
+        }
     }
   
     return mergedArr.concat(sortedLeft.slice(leftIndex)).concat(sortedRight.slice(rightIndex));
@@ -255,9 +259,9 @@ function displayAllRooms(){
 }
 
 function toggleModal(operation) {
-    let popup = document.getElementById("modal"), content, room=["room","r","roomDisplay"], entry=["entry","e","entryDisplay"];
+    let popup = document.getElementById("modal"), content, room=["room","r","roomDisplay"], entry=["entry","e","entryDisplay"], settings=["settings","s","settingsDisplay"];
     hideAllMaps();
-
+    window.modalView = [false,false,false];
     /*
     TODO
     make modal pop up
@@ -268,13 +272,11 @@ function toggleModal(operation) {
     */
     
     if(room.includes(operation)){
-        for(let form of document.getElementsByClassName("roomForm")){
-            form.classList.toggle("show");
-        }
+        modalView[0] = true;
     } else if(entry.includes(operation)){
-        for(let form of document.getElementsByClassName("entryForm")){
-            form.classList.toggle("show");
-        }
+        modalView[1] = true;
+    } else if(settings.includes(operation)){
+        modalView[2] = true;
     } else {
         console.log("Not a valid modal display");
     }
@@ -297,13 +299,16 @@ function hideAllMaps(){
     for(let map of document.getElementsByClassName("map")){
         if(map.classList.contains("show")){
             map.classList.remove("show");
-            console.log("Removed show from classlist for map");
         }
         for(let child of map.children){
             if(child.classList.contains("show")){
                 child.classList.remove("show");
-                console.log("Removed show from classlist for form");
             }
+        }
+    }
+    for(let e of document.getElementsByClassName("displayButton")){
+        if(e.classList.contains("selected")){
+            e.classList.remove("selected");
         }
     }
 }
@@ -311,21 +316,18 @@ function hideAllMaps(){
 function modalDisplay(type){
     type = type.toLowerCase();
     let add=[0,"a","add","c"], update=[1,"u","update"],del=[2,"d","delete","del"];
+    let view = modalView[0] ? document.getElementsByClassName("roomForm") : modalView[1] ? document.getElementsByClassName("entryForm") : modalView[2] ? document.getElementsByClassName("settingsForm") : null;
+    hideAllMaps();
 
-    for(let e of document.getElementsByClassName("displayButton")){
-        if(e.classList.contains("selected")){
-            e.classList.remove("selected");
-        }
-    }
     if(add.includes(type)){
-        document.getElementById("AddMap").classList.toggle("show");
-        document.getElementsByClassName("DisplayButton")[0].classList.toggle("selected");
+        view[0].classList.toggle("show");
+        document.getElementsByClassName("displayButton")[0].classList.toggle("selected");
     } else if(update.includes(type)){
-        document.getElementById("UpdateMap").classList.toggle("show");
-        document.getElementsByClassName("DisplayButton")[1].classList.toggle("selected");
+        view[1].classList.toggle("show");
+        document.getElementsByClassName("displayButton")[1].classList.toggle("selected");
     } else if(del.includes(type)){
-        document.getElementById("DeleteMap").classList.toggle("show");
-        document.getElementsByClassName("DisplayButton")[2].classList.toggle("selected");
+        view[2].classList.toggle("show");
+        document.getElementsByClassName("displayButton")[2].classList.toggle("selected");
     } else {
         console.log("Invalid Display Type");
     }
@@ -340,7 +342,7 @@ function removeUploadFiles(){
 }
 
 function populateRoomRadio(){
-    const select = document.getElementsByClassName("roomSelect");
+    const select = document.getElementsByClassName("entrySearch");
     for(let div of select){
         div.innerHTML = "";
         for(let Room of rooms){
@@ -349,57 +351,6 @@ function populateRoomRadio(){
             option.innerHTML = Room.Name;
             div.appendChild(option);
         }
-    }
-    const option = document.createElement("option");
-    option.value = "Other";
-    option.innerHTML = "Other";
-    select[0].appendChild(option);
-}
-
-function newRoomBox(){
-    const select = document.getElementsByClassName("roomSelect")[0];
-    if(select.value=="Other"){
-        
-    }
-}
-
-function populateTimeList(){
-    const list = document.getElementById('timesList');
-    const select = document.getElementsByClassName('roomSelect')[1];
-    list.innerHTML = "";
-    let i;
-    for(let Room in rooms){
-        if(Room.Name == select.value){
-            i = Room;
-            break;
-        } else { i=-1; }
-    }
-    if(i<0){return ;}
-    document.getElementById("delDirections").textContent = "Choose an entry below:";
-    let j = 1;
-    let maxEntries = 50;
-    for(let entry of i.Entries){
-        if(j > maxEntries){
-            const p = document.createElement("p");
-            const diff = i.Entries.length-maxEntries;
-            p.innerHTML = diff==1 ? "Type to search through 1 more entry" : "Type to search through "+diff+" more entries";
-            p.style.color = "white";
-            list.appendChild(p);
-            return ;
-        } else {
-            const a = document.createElement("a");
-            a.innerHTML = entry.Team+" | "+entry.Time;
-            a.style = "cursor:pointer;color:white;";
-            a.onmouseover = ()=>{a.style.color = "lightgray";}
-            a.onmouseleave = ()=>{a.style.color = "white";}
-            a.onclick = () => {
-                document.getElementById("timeSearch").value = a.textContent.split(" | ")[0];
-                document.getElementById("timeTime").value = a.textContent.split(" | ")[1];
-            }
-            list.appendChild(a);
-            j++;
-        }
-        
     }
 }
 
@@ -424,6 +375,49 @@ document.addEventListener("DOMContentLoaded",()=>{
                     } else {
                     a[i].style.display = "none";
                     }
+                }
+            });
+        }
+    }
+
+    for(let e of document.getElementsByClassName("entrySearch med-select")){
+        if(e.tagName.toLowerCase()==="select"){
+            e.addEventListener("change",function(){
+                const list = document.getElementById(e.id.replace("Search","List"));
+                list.innerHTML="";
+                let i;
+                for(let Room of window.rooms){
+                    if(Room.Name == e.value){
+                        i = Room.Entries;
+                        break;
+                    } else { i=null; }
+                }
+                if(i===null){return ;}
+                document.getElementById("delDirections").textContent = "Choose an entry below:";
+                let j = 1;
+                let maxEntries = 50;
+                for(let entry of i){
+                    if(j > maxEntries){
+                        const p = document.createElement("p");
+                        const diff = i.length-maxEntries;
+                        p.innerHTML = diff==1 ? "Type to search through 1 more entry" : "Type to search through "+diff+" more entries";
+                        p.style.color = "white";
+                        list.appendChild(p);
+                        return ;
+                    } else {
+                        const a = document.createElement("a");
+                        a.innerHTML = entry.Team+" | "+entry.Time;
+                        a.style = "cursor:pointer;color:white;";
+                        a.onmouseover = ()=>{a.style.color = "lightgray";}
+                        a.onmouseleave = ()=>{a.style.color = "white";}
+                        a.onclick = () => {
+                            document.getElementById(e.id.replace("Search","Team")).value = a.textContent.split(" | ")[0];
+                            document.getElementById(e.id.replace("Search","Time")).value = a.textContent.split(" | ")[1];
+                        }
+                        list.appendChild(a);
+                        j++;
+                    }
+                    
                 }
             });
         }

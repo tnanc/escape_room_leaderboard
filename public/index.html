@@ -81,7 +81,7 @@
                         <span class="close" onclick="toggleModal('close')">&times;</span>
                     </div>
                     <hr>
-                    
+
                     <!-- MAP FOR ADDING NEW ROOMS -->
                     <div id="AddMap" class="map">
                         <!-- ADD A ROOM -->
@@ -99,9 +99,18 @@
                         </form>
                         <!-- ADD AN ENTRY -->
                         <form action="/newEntry" method="post" id="newEntryForm" class="entryForm">
-                            <select name="Room" class="roomSelect med-select" onchange="newRoomBox();"></select>
-                            <input type="text" name="Team" placeholder="Team Name" class="med-text-input" maxlength="50"/>
-                            <input type="text" name="Time" placeholder="Time" class="sm-text-input" pattern="[0-9]{1,2}:[0-9]{2}"/>
+                            <div class="inputContainer">
+                                <label for="Room" class="text-label">Room:</label>
+                                <select name="Room" class="roomSelect med-select" onchange="newRoomBox();"></select>
+                            </div>
+                            <div class="inputContainer">
+                                <label for="Team" class="text-label">Team:</label>
+                                <input type="text" name="Team" placeholder="Team Name" class="med-text-input" maxlength="50"/>
+                            </div>
+                            <div class="inputContainer">
+                                <label for="Team" class="text-label">Time:</label>
+                                <input type="text" name="Time" placeholder="Time" class="sm-text-input" pattern="[0-9]{1,2}:[0-9]{2}"/>
+                            </div>
                             <button type="submit" class="med-button">New Entry</button>
                         </form>
                     </div>
@@ -110,19 +119,32 @@
                     <div id="UpdateMap" class="map">
                         <!-- UPDATE A ROOM -->
                         <form action="/updateRoom" method="update" id="updateRoomForm" class="roomForm">
-                            <input name="RoomName" type="text" placeholder="Type to search..." id="updRoomSearch" class="searchFilter" />
+                            <div class="inputContainer">
+                                <label for="RoomName" class="text-label">Room:</label>
+                                <input name="RoomName" type="text" placeholder="Type to search..." id="updRoomSearch" class="searchFilter med-text-input" />
+                            </div>
                             <div id="updRoomList"></div>
-                            <input type="file" name="RoomLogo" placeholder="Upload Logo" class="med-file-upload"/>
+                            <div class="inputContainer">
+                                <label for="RoomLogo" class="text-label">New Logo:</label>
+                                <input type="file" name="RoomLogo" placeholder="Upload Logo" class="med-file-upload"/>
+                            </div>
                             <button type="submit" class="med-button">Update Room</button>
                         </form>
                         <!-- UPDATE AN ENTRY -->
                         <form action="/updateEntry" method="update" id="updateEntryForm" class="entryForm">
-                            <select name="Room" class="roomSelect med-select" onchange="populateTimeList();"></select>
-                            <input name="Team" type="text" placeholder="Type to search..." id="timeSearch" onkeyup="timesFilter()" class="med-text-input"/>
-                            <input name="Time" type="text" placeholder="Current Time" id="timeTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
-                            <input name="NewTime" type="text" placeholder="New Time" id="newTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
-                            <p style="font-family:'Quantico';" id="delDirections">Select a room above</p>
-                            <div id="timesList"></div>
+                            <div class="inputContainer">
+                                <label for="Room" class="text-label">Entry to Update:</label>
+                                <select name="Room" class="roomSelect med-select" onchange="populateTimeList();"></select>
+                                <input name="Team" type="text" placeholder="Type to search..." id="timeSearch" class="searchFilter med-text-input"/>
+                                <input name="Time" type="text" placeholder="Current Time" id="timeTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
+                            </div>
+                            <!-- <p style="font-family:'Quantico';" id="delDirections">Select a room above</p> -->
+                            <div class="timesList"></div>
+
+                            <div class="inputContainer">
+                                <label for="NewTime" class="text-label">New Time:</label>
+                                <input name="NewTime" type="text" placeholder="New Time" id="newTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
+                            </div>
                             <button type="submit" class="med-button">Update Entry</button>
                         </form>
                     </div>
@@ -131,17 +153,23 @@
                     <div id="DeleteMap" class="map">
                         <!-- DELETE A ROOM -->
                         <form action="/deleteRoom" method="delete" id="deleteRoomForm" class="roomForm">
-                            <input name="RoomName" type="text" placeholder="Type to search..." id="delRoomSearch" class="searchFilter" />
+                            <div class="inputContainer">
+                                <label for="RoomName" class="text-label">Room Name:</label>
+                                <input name="RoomName" type="text" placeholder="Type to search..." id="delRoomSearch" class="searchFilter med-text-input" />
+                            </div>
                             <div id="delRoomList"></div>
                             <button type="submit" class="med-button">Delete Room</button>
                         </form>
                         <!-- DELETE AN ENTRY -->
                         <form action="/deleteEntry" method="delete" id="deleteEntryForm" class="entryForm">
-                            <select name="Room" class="roomSelect med-select" onchange="populateTimeList();"></select>
-                            <input name="Team" type="text" placeholder="Type to search..." id="timeSearch" onkeyup="timesFilter()" class="med-text-input"/>
-                            <input name="Time" type="text" placeholder="Time" id="timeTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
+                            <div class="inputContainer">
+                                <label for="Room" class="text-label">Entry to Delete:</label>
+                                <select name="Room" class="entrySearch med-select" id="delEntrySearch"></select>
+                                <input name="Team" type="text" placeholder="Type to search..." id="delEntryTeam" class="searchFilter med-text-input"/>
+                                <input name="Time" type="text" placeholder="Time" id="delEntryTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
+                            </div>
                             <p style="font-family:'Quantico';" id="delDirections">Select a room above</p>
-                            <div id="timesList"></div>
+                            <div id="delEntryList" class="entryList"></div>
                             <button type="submit" class="med-button">Delete Entry</button>
                         </form>
                     </div>
