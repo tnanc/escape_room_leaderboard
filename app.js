@@ -4,6 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+const URL = "./public/data/rooms/";
+
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
@@ -11,45 +13,37 @@ app.listen(8080, () => {
     console.log('Server is running on localhost:8080');
 });
 
-app.get("/settings",function(req,res){
-    fs.readFile("./public/data/settings.json",(err,data)=>{
-        if (err) throw err;
-        res.send(JSON.parse(data));
+app.get("/rooms",function(req,res){
+    let array = [];
+    fs.readdir(URL, (err, files) => {
+        files.forEach(file => {
+            array.push(fs.readFileSync(URL+file,"UTF8"));
+        });
+        res.send(JSON.stringify(array));
     });
 });
 
-app.get("/allRooms",function(req,res){
-    fs.readFile("./public/data/rooms.json",(err,data)=>{
-        if (err) throw err;
-        res.send(JSON.parse(data));
+app.post("/rooms",function(req,res){
+    const filename = URL+req.body.RoomName+".json";
+    const filecontents = `{"RoomName":"`+req.body.RoomName+`","RoomLogo":"`+req.body.RoomLogo["name"]+`","Entries":[]}`
+    fs.writeFile(filename, filecontents, function(err,data){
+        if(err) throw err;
+        res.send(JSON.stringify(filecontents));
     });
 });
 
-app.get("/allEntries",function(req,res){
-    fs.readFile("./public/data/entries.json",(err,data)=>{
-        if (err) throw err;
-        res.send(JSON.parse(data));
+app.put("/rooms",function(req,res){
+    const filename = URL+req.body.RoomName+".json";
+    fs.writeFile(filename, JSON.stringify(req.body), function(err,data){
+        if(err) throw err;
+        res.send(JSON.stringify(req.body));
     });
 });
 
-app.post("/newEntry", function(req,res){
-    const jsonData = JSON.stringify(req.body);
-
-    fs.writeFile("./public/data/entries.json", jsonData, function (err) {
+app.delete("/rooms", function(req,res){
+    let filename = URL+req.body.RoomName+".json";
+    fs.unlink(filename, (err) => {
         if (err) throw err;
-        console.log('New Entry Added!');
+        res.send(`{"status":"success"}`);
     });
-
-    res.send(jsonData);
-});
-
-app.delete("/deleteEntry", function(req,res){
-    const jsonData = JSON.stringify(req.body);
-
-    fs.writeFile("./public/data/entries.json", jsonData, function (err) {
-        if (err) throw err;
-        console.log('Entry Deleted!');
-    });
-
-    res.send(jsonData);
 });

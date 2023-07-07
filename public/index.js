@@ -1,136 +1,58 @@
-class entry{
-    constructor(Room,Team,Time){
-        this.Room = Room;
-        this.Team = Team;
-        this.Time = Time;
-    }
-    toString(){
-        return this.Team+" "+this.Time;
-    }
-    toJSON(){
-        return "{\"Room\":\""+this.Room+"\",\"Team\":\""+this.Team+",\"Time\":\""+this.Time+"\"}";
-    }
-};
-
-class room{
-    Entries = [];
-    constructor(Name, Image){
-        this.Name = Name;
-        this.Image = Image;
-    }
-    addEntry(Entry){
-        if(Entry instanceof entry){
-            this.Entries.push(Entry);
-        } else {
-            console.log("Not a valid entry object");
-        }
-    }
-    removeEntry(Entry){
-        if(Entry instanceof entry){
-            if(this.Entries.includes(Entry)){
-                this.Entries.splice(this.Entries.indexOf(Entry),1);
-            } else {
-                console.log("Room "+this.Name+" does not contain an entry for "+Entry.Team);
-            }
-        } else {
-            console.log("Not a valid entry object");
-        }
-    }
-    clearEntries(){
-        this.Entries = [];
-    }
-    sort(){
-        this.Entries = mergeSort(this.Entries);
-    }
-}
-
 //window height / 2 - height of #leaderboard
 
 //ghostly, game, remote, teacher, elevate, mascot
 var rooms = [];
-var rawEntries;
-var rawRooms;
-
 var modalView = [false,false,false];
-
 var timer;
 
-fetch('/settings', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-})
-.then((response) => response.json())
-.then((data) => {rawRooms = data; applySettings(); })
-.catch((error) => console.error(error));
+
 
 function applySettings(){
-    //TODO
+    fetch('/settings', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((response) => response.json())
+    .then((data) => {rawRooms = data; applySettings(); })
+    .catch((error) => console.error(error));
 }
 
-fetch('/allRooms', {
+fetch('/rooms', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
 })
 .then((response) => response.json())
-.then((data) => {rawRooms = data; parseRoomData(); })
+.then((data) => {
+    parseIncomingData(data);
+    displayRoom(window.rooms[0]);
+})
 .catch((error) => console.error(error));
 
-function parseRoomData(){
+function parseIncomingData(data){
     window.rooms = [];
-    for(let index in rawRooms){
-        window.rooms.push(new room(rawRooms[index].Name,"./images/"+rawRooms[index].Image));
-    }
-}
-
-fetch('/allEntries', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-})
-.then((response) => response.json())
-.then((data) => {rawEntries = data; parseEntryData(); })
-.catch((error) => console.error(error));
-
-function parseEntryData(){
-    for(let Room of rooms){
-        if(Room instanceof room){
-            Room.clearEntries();
-        }
-    }
-    for(let index in rawEntries){
-        let Room = hasRoom(rawEntries[index].Room);
-        if(Room === null){
-            console.log("Room "+rawEntries[index].Room+" does not exist");
-        } else {
-            Room.addEntry(new entry(Room.Name,rawEntries[index].Team,rawEntries[index].Time));
-        }
+    for(let room of data){
+        window.rooms.push(JSON.parse(room));
     }
     
-    for(let Room of window.rooms){
-        if(Room instanceof room){
-            Room.sort();
-        } else {
-            console.log("Room is not a room:\n"+Room);
-        }
-    }
-
     const roomList = document.getElementById("roomList");
     while (roomList.childNodes.length > 2) {
         roomList.removeChild(roomList.lastChild);
     }
-    for(let Room of rooms){
+    for(let room of window.rooms){
+        room.Entries = mergeSort(room.Entries);
+
         const a = document.createElement("a");
         a.style.cursor = "pointer";
-        a.onclick = ()=>{clearInterval(timer); displayRoom(rooms.indexOf(Room))};
-        a.innerHTML = Room.Name;
+        a.onclick = ()=>{clearInterval(timer); displayRoom(room)};
+        a.innerHTML = room.RoomName;
         roomList.appendChild(a);
     }
+
     const a = document.createElement("a");
     a.style.cursor = "pointer";
     a.onclick = ()=>{clearInterval(timer); displayAllRooms()};
     a.innerHTML = "All Rooms";
     roomList.appendChild(a);
-    
-    displayRoom(0);
 }
 
 function mergeSort(arr) {
@@ -174,16 +96,6 @@ function mergeSort(arr) {
     return mergedArr.concat(sortedLeft.slice(leftIndex)).concat(sortedRight.slice(rightIndex));
 }
 
-function hasRoom(Name){
-    for(let Room of rooms){
-        if(Room instanceof room && Room.Name == Name){
-            return Room;
-        }
-    }
-    return null;
-}
-  
-
 var open = false;
 function toggleNav(){
 	if(open){
@@ -216,31 +128,27 @@ function clearBoard(){
     }
 }
 
-function displayRoom(index){
+function displayRoom(display){
     let roomLogos = document.getElementsByClassName("roomLogo");
     let title = document.getElementById("roomTitle");
-    let Room = rooms[index];
-    if(Room instanceof room){
-        roomLogos[0].src = Room.Image;
-        roomLogos[1].src = Room.Image;
-        title.textContent = Room.Name;
+    
+    roomLogos[0].src = "./images/"+display.RoomLogo;
+    roomLogos[1].src = "./images/"+display.RoomLogo;
+    title.textContent = display.RoomName;
 
-        clearBoard();
+    clearBoard();
 
-        let ranks = document.getElementsByClassName("rank");
-        let teams = document.getElementsByClassName("team");
-        let times = document.getElementsByClassName("time");
-        for(let j=1; j<=Room.Entries.length; j++){
-            if(j<=5){
-                ranks[j-1].textContent = j;
-                teams[j-1].textContent = Room.Entries[j-1].Team;
-                times[j-1].textContent = Room.Entries[j-1].Time;
-            } else {
-                break;
-            }
+    let ranks = document.getElementsByClassName("rank");
+    let teams = document.getElementsByClassName("team");
+    let times = document.getElementsByClassName("time");
+    for(let j=1; j<=display.Entries.length; j++){
+        if(j<=5){
+            ranks[j-1].textContent = j;
+            teams[j-1].textContent = display.Entries[j-1].Team;
+            times[j-1].textContent = display.Entries[j-1].Time;
+        } else {
+            break;
         }
-    } else {
-        console.log("\nRoom is not a room: \n"+Room);
     }
 
     let leaderboard = document.getElementById("leaderboard");
@@ -278,19 +186,27 @@ function toggleModal(operation) {
     } else if(settings.includes(operation)){
         modalView[2] = true;
     } else {
-        console.log("Not a valid modal display");
+        console.log("Modal Display: "+operation);
     }
 
     popup.classList.toggle("show");
     if(popup.classList.contains("show")){
         populateRoomRadio();
     } else {
-        fetch('/allEntries', {
+        fetch('/rooms',{
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         })
         .then((response) => response.json())
-        .then((data) => {rawEntries = data; parseEntryData(); })
+        .then((data) => {
+            parseIncomingData(data);
+            const room = findRoom(document.getElementById("roomTitle").textContent);
+            if(room!=null){
+                displayRoom(room);
+            } else {
+                displayRoom(window.rooms[0]);
+            }
+        })
         .catch((error) => console.error(error));
     }
 }
@@ -345,10 +261,10 @@ function populateRoomRadio(){
     const select = document.getElementsByClassName("entrySearch");
     for(let div of select){
         div.innerHTML = "";
-        for(let Room of rooms){
+        for(let room of window.rooms){
             const option = document.createElement("option");
-            option.value = Room.Name;
-            option.innerHTML = Room.Name;
+            option.value = room.RoomName;
+            option.innerHTML = room.RoomName;
             div.appendChild(option);
         }
     }
@@ -387,7 +303,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 list.innerHTML="";
                 let i;
                 for(let Room of window.rooms){
-                    if(Room.Name == e.value){
+                    if(Room.RoomName == e.value){
                         i = Room.Entries;
                         break;
                     } else { i=null; }
@@ -423,50 +339,82 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     }
 
-    const form0 = document.getElementById('newEntryForm');
-    form0.addEventListener('submit', (e) => {
+    const forms = document.getElementsByTagName("form");
+    forms[0].addEventListener('submit', (e)=>{
         e.preventDefault();
 
-        window.rawEntries.push(Object.fromEntries(new FormData(form0).entries()));
+        const data = Object.fromEntries(new FormData(forms[0]).entries());
 
-
-        fetch('/newEntry', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(rawEntries),
-        })
-        .then((response) => response.json())
-        .then((data) => {snackMessage("Entry Added");toggleModal('close');})
-        .catch((error) => console.error(error));
+        request('POST',JSON.stringify(data),"Room Added");
     });
 
-    const form1 = document.getElementById('deleteEntryForm');
-    form1.addEventListener('submit', (e) => {
+    forms[1].addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const toDelete = Object.fromEntries(new FormData(form1).entries());
-        
-        let deleted = false;
-        for(let entry in rawEntries){
-            if(rawEntries[entry].Team==toDelete.Team && rawEntries[entry].Time==toDelete.Time && rawEntries[entry].Room==toDelete.Room){
-                rawEntries.splice(entry,1);
-                deleted = true;
-                break;
-            }
-        }
-        if(!deleted){
-            snackMessage("Entry Not Found");
+        const data = Object.fromEntries(new FormData(forms[1]).entries());
+        let room = findRoom(data.Room);
+        room.Entries.push(JSON.parse(`{"Team":"`+data.Team+`","Time":"`+data.Time+`"}`));
+
+        request('PUT',JSON.stringify(room),"Entry Added");
+    });
+
+    forms[4].addEventListener('submit',(e)=>{
+        e.preventDefault();
+
+        const data = Object.fromEntries(new FormData(forms[4]).entries());
+        const room = findRoom(data.RoomName);
+        if(room!=null){
+            window.rooms.splice(room,1);
+            request('DELETE',JSON.stringify(data),"Room Deleted");
+        } else {
+            snackMessage("Room Not Found");
             toggleModal('close');
-            return ;
         }
+    });
+
+    forms[5].addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const data = Object.fromEntries(new FormData(forms[5]).entries());
+        let room = findRoom(data.RoomName);
+        const entry = findEntry(room,data.Team,data.Time);
         
-        fetch('/deleteEntry', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(rawEntries),
-        })
-        .then((response) => response.json())
-        .then((data) => {snackMessage("Entry Deleted");toggleModal('close');})
-        .catch((error) => console.error(error));
+        if(room!=null && entry!=null){
+            room.Entries.splice(entry,1);
+            request('PUT',JSON.stringify(room),"Entry Deleted");
+        } else {
+            console.log(room.Entries);
+            console.log(entry);
+            snackMessage("Room Not Found");
+            toggleModal('close');
+        }
     });
 })
+
+function request(type,send,message){
+    fetch('/rooms',{
+        method: type,
+        headers: { 'Content-Type': 'application/json' },
+        body: send,
+    })
+    .then((response) => response.json())
+    .then((data) => {snackMessage(message);toggleModal('close');})
+    .catch((error) => console.error(error));
+}
+
+function findRoom(name){
+    for(let room of window.rooms){
+        if(room.RoomName==name){
+            return room;
+        }
+    }
+    return null;
+}
+function findEntry(room,team,time){
+    for(let entry of room.Entries){
+        if(entry.Team==team && entry.Time==time){
+            return entry;
+        }
+    }
+    return null;
+}

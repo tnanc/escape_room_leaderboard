@@ -101,7 +101,7 @@
                         <form action="/newEntry" method="post" id="newEntryForm" class="entryForm">
                             <div class="inputContainer">
                                 <label for="Room" class="text-label">Room:</label>
-                                <select name="Room" class="roomSelect med-select" onchange="newRoomBox();"></select>
+                                <select name="Room" class="entrySearch med-select" id="delEntrySearch"></select>
                             </div>
                             <div class="inputContainer">
                                 <label for="Team" class="text-label">Team:</label>
@@ -120,13 +120,13 @@
                         <!-- UPDATE A ROOM -->
                         <form action="/updateRoom" method="update" id="updateRoomForm" class="roomForm">
                             <div class="inputContainer">
-                                <label for="RoomName" class="text-label">Room:</label>
-                                <input name="RoomName" type="text" placeholder="Type to search..." id="updRoomSearch" class="searchFilter med-text-input" />
+                                <label for="Name" class="text-label">Room:</label>
+                                <input name="Name" type="text" placeholder="Type to search..." id="updRoomSearch" class="searchFilter med-text-input" />
                             </div>
                             <div id="updRoomList"></div>
                             <div class="inputContainer">
-                                <label for="RoomLogo" class="text-label">New Logo:</label>
-                                <input type="file" name="RoomLogo" placeholder="Upload Logo" class="med-file-upload"/>
+                                <label for="Image" class="text-label">New Logo:</label>
+                                <input type="file" name="Image" placeholder="Upload Logo" class="med-file-upload"/>
                             </div>
                             <button type="submit" class="med-button">Update Room</button>
                         </form>
@@ -163,8 +163,8 @@
                         <!-- DELETE AN ENTRY -->
                         <form action="/deleteEntry" method="delete" id="deleteEntryForm" class="entryForm">
                             <div class="inputContainer">
-                                <label for="Room" class="text-label">Entry to Delete:</label>
-                                <select name="Room" class="entrySearch med-select" id="delEntrySearch"></select>
+                                <label for="RoomName" class="text-label">Entry to Delete:</label>
+                                <select name="RoomName" class="entrySearch med-select" id="delEntrySearch"></select>
                                 <input name="Team" type="text" placeholder="Type to search..." id="delEntryTeam" class="searchFilter med-text-input"/>
                                 <input name="Time" type="text" placeholder="Time" id="delEntryTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
                             </div>
