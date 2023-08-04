@@ -28,6 +28,12 @@ fetch('/rooms', {
 })
 .catch((error) => console.error(error));
 
+/**
+ * Takes the json object of a room's entries and assigns
+ * each object to a specific array which can be called
+ * upon based on room name.
+ * @param {*} data 
+ */
 function parseIncomingData(data){
     window.rooms = [];
     for(let room of data){
@@ -50,11 +56,18 @@ function parseIncomingData(data){
 
     const a = document.createElement("a");
     a.style.cursor = "pointer";
+    //TODO - onclick, change modal view to display rooms form
     a.onclick = ()=>{clearInterval(timer); displayAllRooms()};
-    a.innerHTML = "All Rooms";
+    a.innerHTML = "Select Multiple";
     roomList.appendChild(a);
 }
 
+/**
+ * Recursive algorithm to split an array of entries and recursively
+ * sort it in ascending order according to each entry's time.
+ * @param {*} arr
+ * @returns merged left and right arrays
+ */
 function mergeSort(arr) {
     if (arr.length <= 1) {
       return arr;
@@ -113,6 +126,10 @@ function toggleRoomDrop() {
     document.getElementById("roomList").classList.toggle("show");
 }
 
+/**
+ * Clears the table object in the HTML and
+ * populates ranks 1-5 as empty strings.
+ */
 function clearBoard(){
     let ranks = document.getElementsByClassName("rank");
     let teams = document.getElementsByClassName("team");
@@ -128,6 +145,12 @@ function clearBoard(){
     }
 }
 
+/**
+ * Changes the table object in HTML to populate a room's first 5
+ * entries and change the height of the table accordingly.
+ * Takes the name of the room to display as a parameter.
+ * @param {*} display 
+ */
 function displayRoom(display){
     let roomLogos = document.getElementsByClassName("roomLogo");
     let title = document.getElementById("roomTitle");
@@ -157,6 +180,8 @@ function displayRoom(display){
 }
 
 function displayAllRooms(){
+    //TODO - call this function after the form is submitted to iterate through rooms
+    //i++; displayRoom(roomsToView[i]); after an interval
     let roomIndex = -1;
     window.timer = setInterval(()=>{
         if(roomIndex>=rooms.length || roomIndex<0){roomIndex = 0;}
@@ -166,18 +191,17 @@ function displayAllRooms(){
     },8000);
 }
 
+/**
+ * Brings up the modal with a view connected to parameter "operation" by setting
+ * the modalView array's corresponding value to true.
+ * If the modal is already viewable, it becomes hidden and
+ * reperforms a FETCH request for the currently active room in order to
+ * repopulate the table in the HTML.
+ */
 function toggleModal(operation) {
     let popup = document.getElementById("modal"), content, room=["room","r","roomDisplay"], entry=["entry","e","entryDisplay"], settings=["settings","s","settingsDisplay"];
     hideAllMaps();
     window.modalView = [false,false,false];
-    /*
-    TODO
-    make modal pop up
-    set modalView array [false,false,false] = [room,entry,settings]
-    when add is clicked: display add for room if modalView[0] is true & entry if modalView[1] is true
-    when update is clicked: display update for room if modalView[0] is true & entry if modalView[1] is true
-    when delete is clicked: display delete for room if modalView[0] is true & entry if modalView[1] is true
-    */
     
     if(room.includes(operation)){
         modalView[0] = true;
@@ -211,6 +235,10 @@ function toggleModal(operation) {
     }
 }
 
+/**
+ * Removes the "selected" class from each map so a modal would
+ * display no view, but would display a navbar.
+ */
 function hideAllMaps(){
     for(let map of document.getElementsByClassName("map")){
         if(map.classList.contains("show")){
@@ -229,6 +257,11 @@ function hideAllMaps(){
     }
 }
 
+/**
+ * Takes input "type" as a command of which action to perform (e.g. add, update, delete)
+ * and displays the view connected to whichever modalview is active (e.g. room, entry, settings).
+ * @param {*} type 
+ */
 function modalDisplay(type){
     type = type.toLowerCase();
     let add=[0,"a","add","c"], update=[1,"u","update"],del=[2,"d","delete","del"];
@@ -258,7 +291,7 @@ function removeUploadFiles(){
 }
 
 function populateRoomRadio(){
-    const select = document.getElementsByClassName("entrySearch");
+    const select = [...document.querySelectorAll(".entrySearch"),...document.querySelectorAll(".roomSearch")];
     for(let div of select){
         div.innerHTML = "";
         for(let room of window.rooms){
@@ -278,12 +311,17 @@ function snackMessage(message){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-    for(let e of document.getElementsByClassName("searchFilter")){
+    for(let e of document.querySelectorAll(".searchFilter")){
         if(e.tagName.toLowerCase()==="input" && e.type.toLowerCase()==="text"){
             e.addEventListener("keyup",function(){
                 let filter, a, txtValue;
                 filter = e.value.toUpperCase();
-                a = document.getElementById(e.id.replace("Search","List")).getElementsByTagName("a");
+                if(e.id.includes("Search")){
+                    a = document.getElementById(e.id.replace("Search","List")).getElementsByTagName("a");
+                } else if(e.id.includes("Team")){
+                    a = document.getElementById(e.id.replace("Team","List")).getElementsByTagName("a");
+                }
+
                 for (let i = 0; i < a.length; i++) {
                     txtValue = a[i].textContent || a[i].innerText;
                     if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -296,7 +334,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     }
 
-    for(let e of document.getElementsByClassName("entrySearch med-select")){
+    for(let e of document.querySelectorAll(".entrySearch")){
         if(e.tagName.toLowerCase()==="select"){
             e.addEventListener("change",function(){
                 const list = document.getElementById(e.id.replace("Search","List"));
@@ -309,7 +347,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                     } else { i=null; }
                 }
                 if(i===null){return ;}
-                document.getElementById("delDirections").textContent = "Choose an entry below:";
+                document.getElementById(e.id.replace("Search","Directions")).textContent = "Choose an entry below:";
                 let j = 1;
                 let maxEntries = 50;
                 for(let entry of i){
@@ -358,6 +396,9 @@ document.addEventListener("DOMContentLoaded",()=>{
         request('PUT',JSON.stringify(room),"Entry Added");
     });
 
+    //TODO - create form event listeners for forms[2] and forms[3]
+    //find a room/entry; change it's values (similar to forms[1])
+
     forms[4].addEventListener('submit',(e)=>{
         e.preventDefault();
 
@@ -389,8 +430,18 @@ document.addEventListener("DOMContentLoaded",()=>{
             toggleModal('close');
         }
     });
+
+    //TODO - add event listener for a select multiple form
+    //add rooms to view to an array by name
 })
 
+/**
+ * Performs a FETCH request to "/rooms" of method "type" with
+ * a body of "send" and a popup message of "message".
+ * @param {*} type 
+ * @param {*} send 
+ * @param {*} message 
+ */
 function request(type,send,message){
     fetch('/rooms',{
         method: type,

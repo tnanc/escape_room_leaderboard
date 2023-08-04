@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const express = require('express');
+//const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const app = express();
 
@@ -8,6 +9,7 @@ const URL = "./public/data/rooms/";
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
+//app.use(fileUpload());
 
 app.listen(8080, () => {
     console.log('Server is running on localhost:8080');
@@ -47,3 +49,19 @@ app.delete("/rooms", function(req,res){
         res.send(`{"status":"success"}`);
     });
 });
+
+/*
+app.post("/upload",function(req,res){
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send(`{"status":"failure"}`);
+    }
+
+    const file = req.files.file;
+    const uploadPath = __dirname+"public/data/images/"+file.name);
+
+    file.mv(uploadPath, (err) => {
+        if (err) throw err;
+        res.send(`{"status":"success"}`);
+    });
+});
+*/

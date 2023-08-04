@@ -121,9 +121,8 @@
                         <form action="/updateRoom" method="update" id="updateRoomForm" class="roomForm">
                             <div class="inputContainer">
                                 <label for="Name" class="text-label">Room:</label>
-                                <input name="Name" type="text" placeholder="Type to search..." id="updRoomSearch" class="searchFilter med-text-input" />
+                                <select name="RoomName" class="roomSearch med-select" id="updRoomSearch"></select>
                             </div>
-                            <div id="updRoomList"></div>
                             <div class="inputContainer">
                                 <label for="Image" class="text-label">New Logo:</label>
                                 <input type="file" name="Image" placeholder="Upload Logo" class="med-file-upload"/>
@@ -133,13 +132,14 @@
                         <!-- UPDATE AN ENTRY -->
                         <form action="/updateEntry" method="update" id="updateEntryForm" class="entryForm">
                             <div class="inputContainer">
-                                <label for="Room" class="text-label">Entry to Update:</label>
-                                <select name="Room" class="roomSelect med-select" onchange="populateTimeList();"></select>
-                                <input name="Team" type="text" placeholder="Type to search..." id="timeSearch" class="searchFilter med-text-input"/>
-                                <input name="Time" type="text" placeholder="Current Time" id="timeTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
+                                <label for="RoomName" class="text-label">Entry to Update:</label>
+                                <select name="RoomName" class="entrySearch med-select" id="updEntrySearch"></select>
+                                <input name="Team" type="text" placeholder="Type to search..." id="updEntryTeam" class="searchFilter med-text-input"/>
+                                <input name="Time" type="text" placeholder="Current Time" id="updEntryTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
                             </div>
-                            <!-- <p style="font-family:'Quantico';" id="delDirections">Select a room above</p> -->
-                            <div class="timesList"></div>
+
+                            <p style="font-family:'Quantico';" id="updEntryDirections">Select a room above</p>
+                            <div id="updEntryList" class="entryList"></div>
 
                             <div class="inputContainer">
                                 <label for="NewTime" class="text-label">New Time:</label>
@@ -155,9 +155,8 @@
                         <form action="/deleteRoom" method="delete" id="deleteRoomForm" class="roomForm">
                             <div class="inputContainer">
                                 <label for="RoomName" class="text-label">Room Name:</label>
-                                <input name="RoomName" type="text" placeholder="Type to search..." id="delRoomSearch" class="searchFilter med-text-input" />
+                                <select name="RoomName" class="roomSearch med-select" id="delRoomSearch"></select>
                             </div>
-                            <div id="delRoomList"></div>
                             <button type="submit" class="med-button">Delete Room</button>
                         </form>
                         <!-- DELETE AN ENTRY -->
@@ -168,11 +167,14 @@
                                 <input name="Team" type="text" placeholder="Type to search..." id="delEntryTeam" class="searchFilter med-text-input"/>
                                 <input name="Time" type="text" placeholder="Time" id="delEntryTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
                             </div>
-                            <p style="font-family:'Quantico';" id="delDirections">Select a room above</p>
+                            <p style="font-family:'Quantico';" id="delEntryDirections">Select a room above</p>
                             <div id="delEntryList" class="entryList"></div>
                             <button type="submit" class="med-button">Delete Entry</button>
                         </form>
                     </div>
+
+                    <!-- TODO - create a view modal with a room search and select multiple form
+                    add "time between views" slider ?? -->
                 </div>
             </div>
 
