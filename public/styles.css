@@ -290,15 +290,18 @@ footer > div{
     font-family: 'Quantico';
 }
 
-.room-content a {
+.room-content div,section {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
     font-size: medium;
+    display: flex;
+    flex-direction: row;
 }
 
-.room-content a:hover {background-color: var(--tertiary-color);}
+.room-content div:hover {background-color: var(--tertiary-color);}
+.room-content div:hover label {color: var(--text-color-main);}
 
 #modal {
     display: block;

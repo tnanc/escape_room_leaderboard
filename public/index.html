@@ -60,10 +60,17 @@
             </div>
             <div id="nav">
                 <div class="menu-container">
-                    <button onclick="toggleRoomDrop()" id="roomDrop" class="med-button"><i class="fa fa-desktop" aria-hidden="true"></i>Display Room...</button>
-                    <div id="roomList" class="room-content">
-                      <input type="text" placeholder="Search" id="roomSearch" class="searchFilter">
-                    </div>
+                    <button onclick="toggleRoomDrop()" id="roomDrop" class="med-button"><i class="fa fa-desktop" aria-hidden="true"></i>Display Rooms</button>
+                    <form action="/displayRooms" method="post" id="roomList" class="room-content">
+                        <section style="display: block;">
+                            <p>Display Time: <span id="displayTime"></span> secs</p>
+                            <section style="display: flex; flex-direction: row;">
+                                <p>1</p>
+                                <input type="range" min="1" max="10" value="5" id="timeStep" name="timeStep">
+                                <p>10</p>
+                            </section>
+                        </section>
+                    </form>
                 </div>
                 <div class="menu-container">
                     <button onclick="toggleModal('room')" class="med-button"><i class="fa fa-cubes" aria-hidden="true"></i>Room Options</button>
@@ -172,9 +179,6 @@
                             <button type="submit" class="med-button">Delete Entry</button>
                         </form>
                     </div>
-
-                    <!-- TODO - create a view modal with a room search and select multiple form
-                    add "time between views" slider ?? -->
                 </div>
             </div>
 
@@ -185,8 +189,6 @@
         <footer>
             <div>
                 <img class="neiLogo" src="./images/logo.png">
-                <h1 class="outline" style="text-align: center; line-height: 1;">No Escape Iowa<br><span style="font-size: medium; font-weight: normal;">(515) 337 - 8770</span></h1>
-                <img class="neilogo" src="./images/logo.png">
             </div>
         </footer>
         

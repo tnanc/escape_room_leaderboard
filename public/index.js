@@ -47,19 +47,26 @@ function parseIncomingData(data){
     for(let room of window.rooms){
         room.Entries = mergeSort(room.Entries);
 
-        const a = document.createElement("a");
-        a.style.cursor = "pointer";
-        a.onclick = ()=>{clearInterval(timer); displayRoom(room)};
-        a.innerHTML = room.RoomName;
-        roomList.appendChild(a);
+        const div = document.createElement("div");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.name = room.RoomName;
+        input.value = input.name;
+        const label = document.createElement("label");
+        label.for = input.name;
+        label.innerHTML = input.name;
+        div.appendChild(input);
+        div.appendChild(label);
+        roomList.appendChild(div);
     }
 
-    const a = document.createElement("a");
-    a.style.cursor = "pointer";
-    //TODO - onclick, change modal view to display rooms form
-    a.onclick = ()=>{clearInterval(timer); displayAllRooms()};
-    a.innerHTML = "Select Multiple";
-    roomList.appendChild(a);
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "sm-button";
+    submit.innerHTML = "Display";
+    submit.style.padding = "0px 10px";
+    
+    roomList.appendChild(submit);
 }
 
 /**
@@ -179,16 +186,26 @@ function displayRoom(display){
     leaderboard.style.bottom = height+"px";
 }
 
-function displayAllRooms(){
-    //TODO - call this function after the form is submitted to iterate through rooms
-    //i++; displayRoom(roomsToView[i]); after an interval
-    let roomIndex = -1;
+/**
+ * Given a string array and integer, will cycle
+ * through display of each room in roomsToView
+ * and display each room for timeStep seconds
+ * @param {string[]} roomsToView 
+ * @param {int} timeStep 
+ */
+function displayAllRooms(roomsToView,timeStep){
+    let roomIndex = 0;
+    timeStep *= 1000;
     window.timer = setInterval(()=>{
-        if(roomIndex>=rooms.length || roomIndex<0){roomIndex = 0;}
-        else{roomIndex++;}
-        displayRoom(roomIndex);
-        
-    },8000);
+        const room = findRoom(roomsToView[roomIndex]);
+        if(room==null){
+            roomIndex = 0;
+            displayRoom(findRoom(roomsToView[0]));
+        } else {
+            displayRoom(room);
+            roomIndex++;
+        }
+    },timeStep);
 }
 
 /**
@@ -378,31 +395,51 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
 
     const forms = document.getElementsByTagName("form");
+    const timeSlider = document.getElementById("timeStep");
+    document.getElementById("displayTime").innerHTML = timeSlider.value;
+    timeSlider.addEventListener('change',(e)=>{
+        document.getElementById("displayTime").innerHTML = timeSlider.value;
+    });
     forms[0].addEventListener('submit', (e)=>{
         e.preventDefault();
-
         const data = Object.fromEntries(new FormData(forms[0]).entries());
+        let roomsToView = [];
+        for(let d in data){
+            roomsToView.push(data[d]);
+        }
+        const timeStep = roomsToView[0];
+        roomsToView.splice(0,1);
+        
+        toggleRoomDrop();
+        toggleNav();
+        clearInterval(timer);
+        displayAllRooms(roomsToView,timeStep);
+    });
+    forms[1].addEventListener('submit', (e)=>{
+        e.preventDefault();
+
+        const data = Object.fromEntries(new FormData(forms[1]).entries());
 
         request('POST',JSON.stringify(data),"Room Added");
     });
 
-    forms[1].addEventListener('submit', (e) => {
+    forms[2].addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const data = Object.fromEntries(new FormData(forms[1]).entries());
+        const data = Object.fromEntries(new FormData(forms[2]).entries());
         let room = findRoom(data.Room);
         room.Entries.push(JSON.parse(`{"Team":"`+data.Team+`","Time":"`+data.Time+`"}`));
 
         request('PUT',JSON.stringify(room),"Entry Added");
     });
 
-    //TODO - create form event listeners for forms[2] and forms[3]
-    //find a room/entry; change it's values (similar to forms[1])
+    //TODO - create form event listeners for forms[3] and forms[4]
+    //find a room/entry; change it's values (similar to forms[2])
 
-    forms[4].addEventListener('submit',(e)=>{
+    forms[5].addEventListener('submit',(e)=>{
         e.preventDefault();
 
-        const data = Object.fromEntries(new FormData(forms[4]).entries());
+        const data = Object.fromEntries(new FormData(forms[5]).entries());
         const room = findRoom(data.RoomName);
         if(room!=null){
             window.rooms.splice(room,1);
@@ -413,10 +450,10 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     });
 
-    forms[5].addEventListener('submit', (e) => {
+    forms[6].addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const data = Object.fromEntries(new FormData(forms[5]).entries());
+        const data = Object.fromEntries(new FormData(forms[6]).entries());
         let room = findRoom(data.RoomName);
         const entry = findEntry(room,data.Team,data.Time);
         
