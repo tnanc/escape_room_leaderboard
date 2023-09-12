@@ -42,22 +42,20 @@ function parseIncomingData(data){
     
     const roomList = document.getElementById("roomList");
     while (roomList.childNodes.length > 2) {
-        roomList.removeChild(roomList.lastChild);
+        roomList.removeChild(roomList.firstChild);
     }
     for(let room of window.rooms){
         room.Entries = mergeSort(room.Entries);
-
-        const div = document.createElement("div");
         const input = document.createElement("input");
         input.type = "checkbox";
         input.name = room.RoomName;
         input.value = input.name;
+        input.style.cursor = "pointer";
         const label = document.createElement("label");
-        label.for = input.name;
-        label.innerHTML = input.name;
-        div.appendChild(input);
-        div.appendChild(label);
-        roomList.appendChild(div);
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(input.name));
+        label.style.cursor = "pointer";
+        roomList.insertBefore(label,roomList.children[0]);
     }
 
     const submit = document.createElement("button");
@@ -400,6 +398,20 @@ document.addEventListener("DOMContentLoaded",()=>{
     timeSlider.addEventListener('change',(e)=>{
         document.getElementById("displayTime").innerHTML = timeSlider.value;
     });
+    forms[0].addEventListener('change', (e)=>{
+        const data = Object.fromEntries(new FormData(forms[0]).entries());
+        let roomsToView = [];
+        for(let d in data){
+            roomsToView.push(data[d]);
+        }
+        roomsToView.splice(0,1);
+        const timeSection = document.getElementById("timeSection");
+        if(roomsToView.length > 1){
+            timeSection.style.display = "block";
+        } else {
+            timeSection.style.display = "none";
+        }
+    });
     forms[0].addEventListener('submit', (e)=>{
         e.preventDefault();
         const data = Object.fromEntries(new FormData(forms[0]).entries());
@@ -413,7 +425,17 @@ document.addEventListener("DOMContentLoaded",()=>{
         toggleRoomDrop();
         toggleNav();
         clearInterval(timer);
-        displayAllRooms(roomsToView,timeStep);
+        if(roomsToView.length > 1){
+            displayAllRooms(roomsToView,timeStep);
+        } else {
+            const room = findRoom(roomsToView[0]);
+            if(room!=null){
+                displayRoom(room);
+            } else {
+                displayRoom(findRoom(rooms[0]));
+            }
+        }
+        
     });
     forms[1].addEventListener('submit', (e)=>{
         e.preventDefault();

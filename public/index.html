@@ -62,7 +62,8 @@
                 <div class="menu-container">
                     <button onclick="toggleRoomDrop()" id="roomDrop" class="med-button"><i class="fa fa-desktop" aria-hidden="true"></i>Display Rooms</button>
                     <form action="/displayRooms" method="post" id="roomList" class="room-content">
-                        <section style="display: block;">
+                        <section style="display: none;" id="timeSection">
+                            <label><input type="checkbox" name="checkbox" value="value">Text</label>
                             <p>Display Time: <span id="displayTime"></span> secs</p>
                             <section style="display: flex; flex-direction: row;">
                                 <p>1</p>
