@@ -11,7 +11,8 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 //app.use(fileUpload());
 
-app.listen(8080, () => {
+//listen at 192.168.4.56:8000
+app.listen(8080/*,'192.168.4.56:8000'*/, () => {
     console.log('Server is running on localhost:8080');
 });
 
