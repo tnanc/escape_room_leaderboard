@@ -7,13 +7,16 @@ const app = express();
 
 const URL = "./public/data/rooms/";
 
+const IPV4 = "192.168.4.56";
+const PORT = "8080";
+
 app.use(express.static('public'));
 app.use(bodyParser.json());
 //app.use(fileUpload());
 
-//listen at 192.168.4.56:8000
-app.listen(8080/*,'192.168.4.56:8000'*/, () => {
-    console.log('Server is running on localhost:8080');
+//listen at 192.168.4.56:8080
+app.listen(PORT,IPV4, () => {
+    console.log('Server is running on '+IPV4+':'+PORT);
 });
 
 app.get("/rooms",function(req,res){

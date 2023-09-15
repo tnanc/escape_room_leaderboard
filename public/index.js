@@ -44,6 +44,7 @@ function parseIncomingData(data){
     while (roomList.childNodes.length > 2) {
         roomList.removeChild(roomList.firstChild);
     }
+    //jump here
     for(let room of window.rooms){
         room.Entries = mergeSort(room.Entries);
         const input = document.createElement("input");
@@ -188,22 +189,18 @@ function displayRoom(display){
  * Given a string array and integer, will cycle
  * through display of each room in roomsToView
  * and display each room for timeStep seconds
- * @param {string[]} roomsToView 
- * @param {int} timeStep 
+ * @param {string[]} roomsToView
  */
-function displayAllRooms(roomsToView,timeStep){
+function displayAllRooms(roomsToView){
+    //jump here
     let roomIndex = 0;
-    timeStep *= 1000;
     window.timer = setInterval(()=>{
         const room = findRoom(roomsToView[roomIndex]);
-        if(room==null){
+        displayRoom(room);
+        roomIndex++;
+        if(roomIndex>=roomsToView.length)
             roomIndex = 0;
-            displayRoom(findRoom(roomsToView[0]));
-        } else {
-            displayRoom(room);
-            roomIndex++;
-        }
-    },timeStep);
+    },document.getElementById("timeStep").value * 1000);
 }
 
 /**
@@ -398,6 +395,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     timeSlider.addEventListener('change',(e)=>{
         document.getElementById("displayTime").innerHTML = timeSlider.value;
     });
+    //jump here
     forms[0].addEventListener('change', (e)=>{
         const data = Object.fromEntries(new FormData(forms[0]).entries());
         let roomsToView = [];
@@ -419,14 +417,13 @@ document.addEventListener("DOMContentLoaded",()=>{
         for(let d in data){
             roomsToView.push(data[d]);
         }
-        const timeStep = roomsToView[0];
-        roomsToView.splice(0,1);
+        console.log(roomsToView.pop());
         
         toggleRoomDrop();
         toggleNav();
         clearInterval(timer);
         if(roomsToView.length > 1){
-            displayAllRooms(roomsToView,timeStep);
+            displayAllRooms(roomsToView);
         } else {
             const room = findRoom(roomsToView[0]);
             if(room!=null){
