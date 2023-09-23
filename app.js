@@ -1,20 +1,21 @@
 const http = require('http');
 const fs = require('fs');
 const express = require('express');
-//const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const app = express();
+const multer = require('multer');
 
 const URL = "./public/data/rooms/";
 
-const IPV4 = "192.168.4.56";
+const IPV4 = "localhost";
 const PORT = "8080";
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
-//app.use(fileUpload());
+  
+const upload = multer({ dest:'./public/data/images/' });
+  
 
-//listen at 192.168.4.56:8080
 app.listen(PORT,IPV4, () => {
     console.log('Server is running on '+IPV4+':'+PORT);
 });
@@ -31,7 +32,8 @@ app.get("/rooms",function(req,res){
 
 app.post("/rooms",function(req,res){
     const filename = URL+req.body.RoomName+".json";
-    const filecontents = `{"RoomName":"`+req.body.RoomName+`","RoomLogo":"`+req.body.RoomLogo["name"]+`","Entries":[]}`
+    const filecontents = `{"RoomName":"`+req.body.RoomName+`","RoomLogo":"`+req.body.RoomLogo+`","Entries":[]}`;
+
     fs.writeFile(filename, filecontents, function(err,data){
         if(err) throw err;
         res.send(JSON.stringify(filecontents));

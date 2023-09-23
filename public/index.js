@@ -44,8 +44,7 @@ function parseIncomingData(data){
     while (roomList.childNodes.length > 2) {
         roomList.removeChild(roomList.firstChild);
     }
-    //jump here
-    for(let room of window.rooms){
+        for(let room of window.rooms){
         room.Entries = mergeSort(room.Entries);
         const input = document.createElement("input");
         input.type = "checkbox";
@@ -161,8 +160,8 @@ function displayRoom(display){
     let roomLogos = document.getElementsByClassName("roomLogo");
     let title = document.getElementById("roomTitle");
     
-    roomLogos[0].src = "./images/"+display.RoomLogo;
-    roomLogos[1].src = "./images/"+display.RoomLogo;
+    roomLogos[0].src = "./data/images/"+display.RoomLogo;
+    roomLogos[1].src = "./data/images/"+display.RoomLogo;
     title.textContent = display.RoomName;
 
     clearBoard();
@@ -192,8 +191,7 @@ function displayRoom(display){
  * @param {string[]} roomsToView
  */
 function displayAllRooms(roomsToView){
-    //jump here
-    let roomIndex = 0;
+        let roomIndex = 0;
     window.timer = setInterval(()=>{
         const room = findRoom(roomsToView[roomIndex]);
         displayRoom(room);
@@ -395,8 +393,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     timeSlider.addEventListener('change',(e)=>{
         document.getElementById("displayTime").innerHTML = timeSlider.value;
     });
-    //jump here
-    forms[0].addEventListener('change', (e)=>{
+        forms[0].addEventListener('change', (e)=>{
         const data = Object.fromEntries(new FormData(forms[0]).entries());
         let roomsToView = [];
         for(let d in data){
@@ -417,7 +414,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         for(let d in data){
             roomsToView.push(data[d]);
         }
-        console.log(roomsToView.pop());
+        roomsToView.pop();
         
         toggleRoomDrop();
         toggleNav();
@@ -434,10 +431,12 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
         
     });
+
     forms[1].addEventListener('submit', (e)=>{
         e.preventDefault();
 
         const data = Object.fromEntries(new FormData(forms[1]).entries());
+        data["RoomLogo"] = data.RoomLogo["name"];
 
         request('POST',JSON.stringify(data),"Room Added");
     });

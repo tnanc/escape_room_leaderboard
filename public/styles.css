@@ -4,22 +4,19 @@
 @import url("https://fonts.googleapis.com/css?family=Covered By Your Grace");
 
 :root{
-    --no-escape-logo: url("./images/logo.png");
-
     --primary-color: #141414;
     --border-color: #ac9250;
     --secondary-color: #363636;
     --tertiary-color: #242424;
     --text-color-main: #ffffff;
-    --text-color-header: #ac9250;
+    --text-color-border: #ac9250;
 
     background-color: var(--tertiary-color);
     color: var(--text-color-main);
     margin: 0px;
 }
 img{
-    width: 100px;
-    height: 100px;
+    max-height: 100px;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -37,7 +34,7 @@ header{
     text-align: center;
 }
 .outline{
-    color: var(--text-color-header);
+    color: var(--text-color-border);
     -webkit-text-fill-color: white;
     -webkit-text-stroke: 1px;
 }
@@ -48,7 +45,7 @@ main > #leaderboard{
     height: auto;
     max-height: 70%;
     z-index: 0;
-    overflow-y: scroll;
+    overflow-y: hidden;
     bottom: 120px;
 }
 
@@ -360,7 +357,7 @@ form > .med-button{
     cursor: pointer;
     width: 50px;
     font-size: xx-large;
-    color: var(--text-color-header);
+    color: var(--text-color-border);
 }
 
 #snackbar {

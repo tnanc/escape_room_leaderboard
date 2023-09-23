@@ -1,1 +1,3 @@
-/public/leaderboard.json
+/public/data/rooms/*.json
+/public/data/settings.json
+/public/data/images/*.*
