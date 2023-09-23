@@ -3,41 +3,71 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const multer = require('multer');
+
+const URL = "./public/data/rooms/";
+
+const IPV4 = "localhost";
+const PORT = "8080";
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
+  
+const upload = multer({ dest:'./public/data/images/' });
+  
 
-app.listen(8080, () => {
-    console.log('Server is running on localhost:8080');
+app.listen(PORT,IPV4, () => {
+    console.log('Server is running on '+IPV4+':'+PORT);
 });
 
-app.get("/allEntries",function(req,res){
-    let jsonData;
-    fs.readFile("./public/leaderboard.json",(err,data)=>{
-        if (err) throw err;
-        jsonData = data;
-        res.send(JSON.parse(data));
+app.get("/rooms",function(req,res){
+    let array = [];
+    fs.readdir(URL, (err, files) => {
+        files.forEach(file => {
+            array.push(fs.readFileSync(URL+file,"UTF8"));
+        });
+        res.send(JSON.stringify(array));
     });
 });
 
-app.post("/newEntry", function(req,res){
-    const jsonData = JSON.stringify(req.body);
+app.post("/rooms",function(req,res){
+    const filename = URL+req.body.RoomName+".json";
+    const filecontents = `{"RoomName":"`+req.body.RoomName+`","RoomLogo":"`+req.body.RoomLogo+`","Entries":[]}`;
 
-    fs.writeFile("./public/leaderboard.json", jsonData, function (err) {
-        if (err) throw err;
-        console.log('New Entry Added!');
+    fs.writeFile(filename, filecontents, function(err,data){
+        if(err) throw err;
+        res.send(JSON.stringify(filecontents));
     });
-
-    res.send(jsonData);
 });
 
-app.delete("/deleteEntry", function(req,res){
-    const jsonData = JSON.stringify(req.body);
-
-    fs.writeFile("./public/leaderboard.json", jsonData, function (err) {
-        if (err) throw err;
-        console.log('Entry Deleted!');
+app.put("/rooms",function(req,res){
+    const filename = URL+req.body.RoomName+".json";
+    fs.writeFile(filename, JSON.stringify(req.body), function(err,data){
+        if(err) throw err;
+        res.send(JSON.stringify(req.body));
     });
-
-    res.send(jsonData);
 });
+
+app.delete("/rooms", function(req,res){
+    let filename = URL+req.body.RoomName+".json";
+    fs.unlink(filename, (err) => {
+        if (err) throw err;
+        res.send(`{"status":"success"}`);
+    });
+});
+
+/*
+app.post("/upload",function(req,res){
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send(`{"status":"failure"}`);
+    }
+
+    const file = req.files.file;
+    const uploadPath = __dirname+"public/data/images/"+file.name);
+
+    file.mv(uploadPath, (err) => {
+        if (err) throw err;
+        res.send(`{"status":"success"}`);
+    });
+});
+*/

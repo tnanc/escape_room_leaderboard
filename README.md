@@ -32,7 +32,7 @@ ADDING ENTRIES
 --------------
 To add new entries to pre-existing rooms...
 1. Open the sidebar display using the hamburger menu on the top right
-2. Click the 'Add Entry' Button
+2. Click the 'Entry Options' Button, and select ADD
 3. Fill out the displayed form
 4. Click submit to add a new entry to the selected room
 
@@ -41,7 +41,36 @@ DELETING ENTRIES
 ----------------
 To remove entries...
 1. Open the sidebar display using the hamburger menu on the top right
-2. Click the 'Delete Entry' Button
+2. Click the 'Entry Options' Button, and select DELETE
 3. Use the form to select a room and search through its entries
 4. Click the entry you want to delete
 5. Click submit to delete the selected entry
+
+----------------
+UPDATING ENTRIES
+----------------
+** UNDER CONSTRUCTION **
+
+------------
+ADDING ROOMS
+------------
+To add new rooms to your leaderboard...
+1. On your computer, move the room logo image into the leaderboard's public/data/images folder
+2. On the leaderboard, open the sidebar display using the hamburger menu on the top right
+3. Click the 'Room Options' Button, and select ADD
+4. Fill out the displayed form
+5. Click submit to add a new room with no entries
+
+--------------
+DELETING ROOMS
+--------------
+To remove a room and all its entries...
+1. Open the sidebar display using the hamburger menu on the top right
+2. Click the 'Room Options' Button, and select DELETE
+3. Use the form to select a room
+4. Click submit to delete the selected room
+
+--------------
+UPDATING ROOMS
+--------------
+** UNDER CONSTRUCTION **
