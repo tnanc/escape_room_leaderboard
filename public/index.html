@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>No Escape Iowa Leaderboard</title>
+        <title>Leaderboard</title>
 
         <link href="./styles.css" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -12,185 +12,55 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     </head>
     <body>
-        <main>
-            <header class="outline">
-                <h1 style="margin-right:10px;">Leaderboard</h1>
-                <span id="open" onclick="toggleNav()" style="color:white;float:inline-end;cursor:pointer;">&#9776;</span>
-            </header>
-            <div id="leaderboard">
-                <div id="roomContainer" style="display:flex;justify-content: space-around;">
-                    <img class="roomLogo">
-                    <h2 id="roomTitle" class="outline">Room Name</h2>
-                    <img class="roomLogo">
-                </div>
-                <div id="table" style="display:flex; flex-flow: column no-wrap; justify-content: center;">
-                    <table id="table">
-                        <tr class="outline">
-                            <th>Rank</th>
-                            <th>Team</th>
-                            <th>Time</th>
-                        </tr>
-                        <tr>
-                            <td class='rank'></td>
-                            <td class="team"></td>
-                            <td class="time"></td>
-                        </tr>
-                        <tr>
-                            <td class='rank'></td>
-                            <td class="team"></td>
-                            <td class="time"></td>
-                        </tr>
-                        <tr>
-                            <td class='rank'></td>
-                            <td class="team"></td>
-                            <td class="time"></td>
-                        </tr>
-                        <tr>
-                            <td class='rank'></td>
-                            <td class="team"></td>
-                            <td class="time"></td>
-                        </tr>
-                        <tr>
-                            <td class='rank'></td>
-                            <td class="team"></td>
-                            <td class="time"></td>
-                        </tr>
-                    </table>
-                </div>
+
+        <!-- Title Banner -->
+        <div class="banner">
+            <h1 id="titleText">Title</h1>
+        </div>
+
+        <!-- Room Name and Logo Banner -->
+        <div class="banner">
+            <img class="roomLogo square" alt="Upload Room Logo">
+            <h2 id="roomName">Room Name</h2>
+            <img class="roomLogo square" alt="Upload Room Logo">
+        </div>
+
+        <!-- Fixed Company Logo -->
+        <img id="brandLogo" alt="Upload Brand Logo">
+
+        <!-- Leaderboard Display Space -->
+        <div class="banner fill">
+            <table id="leaderboard">
+                <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th>Time</th>
+                </tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+            </table>
+        </div>
+
+        <!-- Menu Display Space -->
+        <div class="flag-menu">
+            <div class="flag"></div>
+            <div class="flag"></div>
+            <div class="flag"></div>
+        </div>
+
+        <!-- Modal Display Space -->
+        <div class="popup overlay large">
+            <div class="content" id="modal">
+                <p class="close" onclick="toggleModal()">X</p>
             </div>
-            <div id="nav">
-                <div class="menu-container">
-                    <button onclick="toggleRoomDrop()" id="roomDrop" class="med-button"><i class="fa fa-desktop" aria-hidden="true"></i>Display Rooms</button>
-                    <form action="/displayRooms" method="post" id="roomList" class="room-content">
-                        <section style="display: none;" id="timeSection">
-                            <p>Display Time: <span id="displayTime"></span> secs</p>
-                            <section style="display: flex; flex-direction: row;">
-                                <p>1</p>
-                                <input type="range" min="1" max="10" value="5" id="timeStep" name="timeStep">
-                                <p>10</p>
-                            </section>
-                        </section>
-                    </form>
-                </div>
-                <div class="menu-container">
-                    <button onclick="toggleModal('room')" class="med-button"><i class="fa fa-cubes" aria-hidden="true"></i>Room Options</button>
-                    <button onclick="toggleModal('entry')" class="med-button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Entry Options</button>
-                    <button onclick="toggleModal('settings')" class="med-button"><i class="fa fa-cog" aria-hidden="true"></i>Settings</button>
-                </div>
-            </div>
+        </div>
 
-            <div id="modal">
-                <div class="modal-content">
-                    <div id="CRUDmap" class="outline">
-                        <a class="displayButton" onclick="modalDisplay('add')">ADD</a>
-                        <a class="displayButton" onclick="modalDisplay('update')">UPDATE</a>
-                        <a class="displayButton" onclick="modalDisplay('delete')">DELETE</a>
-                        <span class="close" onclick="toggleModal('close')">&times;</span>
-                    </div>
-                    <hr>
+        <!-- Snack Message -->
+        <div class="popup content small">
 
-                    <!-- MAP FOR ADDING NEW ROOMS -->
-                    <div id="AddMap" class="map">
-                        <!-- ADD A ROOM -->
-                        <form id="newRoomForm" class="roomForm">
-                            <div class="inputContainer">
-                                <label for="RoomName" class="text-label">Room Name:</label>
-                                <input type="text" name="RoomName" placeholder=". . ." class="med-text-input" maxlength="100" />
-                            </div>
-                            <div class="inputContainer">
-                                <label for="RoomLogo" class="text-label">Room Logo:</label>
-                                <input type="file" name="RoomLogo" placeholder="Upload Logo" class="med-file-upload"/>
-                                <a class="sm-button" onclick="removeUploadFiles()"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                            </div>
-                            <button type="submit" class="med-button">New Room</button>
-                        </form>
-                        <!-- ADD AN ENTRY -->
-                        <form action="/newEntry" method="post" id="newEntryForm" class="entryForm">
-                            <div class="inputContainer">
-                                <label for="Room" class="text-label">Room:</label>
-                                <select name="Room" class="entrySearch med-select" id="delEntrySearch"></select>
-                            </div>
-                            <div class="inputContainer">
-                                <label for="Team" class="text-label">Team:</label>
-                                <input type="text" name="Team" placeholder="Team Name" class="med-text-input" maxlength="50"/>
-                            </div>
-                            <div class="inputContainer">
-                                <label for="Team" class="text-label">Time:</label>
-                                <input type="text" name="Time" placeholder="Time" class="sm-text-input" pattern="[0-9]{1,2}:[0-9]{2}"/>
-                            </div>
-                            <button type="submit" class="med-button">New Entry</button>
-                        </form>
-                    </div>
-
-                    <!-- MAP FOR UPDATING EXISTING ROOMS -->
-                    <div id="UpdateMap" class="map">
-                        <!-- UPDATE A ROOM -->
-                        <form action="/updateRoom" method="update" id="updateRoomForm" class="roomForm">
-                            <div class="inputContainer">
-                                <label for="Name" class="text-label">Room:</label>
-                                <select name="RoomName" class="roomSearch med-select" id="updRoomSearch"></select>
-                            </div>
-                            <div class="inputContainer">
-                                <label for="Image" class="text-label">New Logo:</label>
-                                <input type="file" name="Image" placeholder="Upload Logo" class="med-file-upload"/>
-                            </div>
-                            <button type="submit" class="med-button">Update Room</button>
-                        </form>
-                        <!-- UPDATE AN ENTRY -->
-                        <form action="/updateEntry" method="update" id="updateEntryForm" class="entryForm">
-                            <div class="inputContainer">
-                                <label for="RoomName" class="text-label">Entry to Update:</label>
-                                <select name="RoomName" class="entrySearch med-select" id="updEntrySearch"></select>
-                                <input name="Team" type="text" placeholder="Type to search..." id="updEntryTeam" class="searchFilter med-text-input"/>
-                                <input name="Time" type="text" placeholder="Current Time" id="updEntryTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
-                            </div>
-
-                            <p style="font-family:'Quantico';" id="updEntryDirections">Select a room above</p>
-                            <div id="updEntryList" class="entryList"></div>
-
-                            <div class="inputContainer">
-                                <label for="NewTime" class="text-label">New Time:</label>
-                                <input name="NewTime" type="text" placeholder="New Time" id="newTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
-                            </div>
-                            <button type="submit" class="med-button">Update Entry</button>
-                        </form>
-                    </div>
-
-                    <!-- MAP FOR DELETING ROOMS -->
-                    <div id="DeleteMap" class="map">
-                        <!-- DELETE A ROOM -->
-                        <form action="/deleteRoom" method="delete" id="deleteRoomForm" class="roomForm">
-                            <div class="inputContainer">
-                                <label for="RoomName" class="text-label">Room Name:</label>
-                                <select name="RoomName" class="roomSearch med-select" id="delRoomSearch"></select>
-                            </div>
-                            <button type="submit" class="med-button">Delete Room</button>
-                        </form>
-                        <!-- DELETE AN ENTRY -->
-                        <form action="/deleteEntry" method="delete" id="deleteEntryForm" class="entryForm">
-                            <div class="inputContainer">
-                                <label for="RoomName" class="text-label">Entry to Delete:</label>
-                                <select name="RoomName" class="entrySearch med-select" id="delEntrySearch"></select>
-                                <input name="Team" type="text" placeholder="Type to search..." id="delEntryTeam" class="searchFilter med-text-input"/>
-                                <input name="Time" type="text" placeholder="Time" id="delEntryTime" readonly pattern="[0-9]{1,2}:[0-9]{2}" class="sm-text-input"/>
-                            </div>
-                            <p style="font-family:'Quantico';" id="delEntryDirections">Select a room above</p>
-                            <div id="delEntryList" class="entryList"></div>
-                            <button type="submit" class="med-button">Delete Entry</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div id="snackbar" class="outline">
-                Testing text content...
-            </div>
-        </main>
-        <footer>
-            <div>
-                <img class="neiLogo" src="./data/images/logo.png">
-            </div>
-        </footer>
-        
+        </div>
     </body>
 </html>

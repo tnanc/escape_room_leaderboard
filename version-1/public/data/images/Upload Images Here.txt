@@ -1,0 +1,2 @@
+Upload images by dragging and dropping them from their saved location to this folder.
+Then, use the Leaderboard's GUI to add any feature that incorporates the image.

@@ -3,7 +3,6 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const multer = require('multer');
 
 const URL = "./public/data/rooms/";
 
@@ -12,8 +11,6 @@ const PORT = "8080";
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
-  
-const upload = multer({ dest:'./public/data/images/' });
   
 
 app.listen(PORT,IPV4, () => {
