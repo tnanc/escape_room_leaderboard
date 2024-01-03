@@ -50,6 +50,43 @@
     height: max-content;
 }
 
+#leaderboard{
+    min-width: 600px;
+    max-height: 80%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#leaderboard > p{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-width: 200px;
+    max-width: 600px;
+    height: 50px;
+    border: 2px solid goldenrod;
+    border-radius: 25px;
+    background-color: rgb(10, 10, 10);
+    font-family: 'Carter One';
+    font-size: x-large;
+}
+
+#leaderboard > #entries {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+#leaderboard > #entries > p{
+    min-width: 200px;
+    max-width: 600px;
+    height: 50px;
+    border-bottom: 1px solid rgb(10, 10, 10);
+    text-align: center;
+    font-family: 'Quantico';
+    font-size: large;
+    overflow: hidden;
+}
+
 /* Flag Menu */
 
 .flag-menu{
@@ -61,19 +98,22 @@
     position: absolute;
     right: -100px;
     bottom: 20px;
-    background-color: red;
 }
 
 .flag{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
     width: 150px;
     height: 50px;
-    background-color: pink;
+    background-color: goldenrod;
     position: relative;
     right: 0px;
     animation: flag-collapse 0.5s;
 }
 
-.flag.expand{
+.flag:hover{
     animation: flag-expand 0.5s;
     right: 100px;
 }
@@ -86,6 +126,24 @@
 @keyframes flag-collapse {
     from {right: 100px;}
     to {right: 0px;}
+}
+
+.flag > i{
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    font-size: xx-large;
+    color: black;
+}
+
+.flag > i:not(:first-of-type){
+    background-color: rgb(212, 172, 71);
+    cursor: pointer;
+}
+
+.flag > i:not(:first-of-type):hover{
+    background-color: rgb(179, 145, 61);
 }
 
 /* Popups */

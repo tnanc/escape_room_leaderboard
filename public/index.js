@@ -114,34 +114,23 @@ function loadRooms(){
 function roomDisplay(room, display){
     const logo = document.getElementsByClassName("roomLogo");
     const name = document.getElementById("roomName");
-    const board = document.getElementById("leaderboard");
-    let rank = 1;
+    const entries = document.getElementById("entries");
 
-    board.innerHTML =
-        "<tr> \
-        <th>Rank</th> \
-        <th>Team</th> \
-        <th>Time</th> \
-        </tr> \
-        <tr><td></td><td></td><td></td></tr> \
-        <tr><td></td><td></td><td></td></tr> \
-        <tr><td></td><td></td><td></td></tr> \
-        <tr><td></td><td></td><td></td></tr> \
-        <tr><td></td><td></td><td></td></tr>"
-    ;
+    entries.innerHTML = "";
     
     logo[0].src = logo[1].src = "./data/images/"+room.RoomLogo;
     name.textContent = room.RoomName;
-    for(let tr of board.getElementsByTagName("tr")){
-        let entry = tr.getElementsByTagName("td");
-        entry[0].textContent = rank;
-        entry[1].textContent = room.Entries[rank].Team;
-        entry[2].textContent = room.Entries[rank].Time;
-
-        if(rank >= display){
-            rank = 1;
-            break;
-        } else rank++;
+    for(let rank=1; rank<=display; rank++){
+        let el = document.createElement("p");
+        el.textContent = rank;
+        entries.appendChild(el);
+        el = document.createElement("p");
+        el.style.fontFamily = "Covered By Your Grace";
+        el.textContent = room.Entries[rank].Team;
+        entries.appendChild(el);
+        el = document.createElement("p");
+        el.textContent = room.Entries[rank].Time;
+        entries.appendChild(el);
     }
 }
 
@@ -173,3 +162,23 @@ function displayRooms(roomsToView){
 function toggleModal(){
     document.getElementById("modal").parentElement.classList.toggle("visible");
 }
+
+function snackMessage(message){
+    var snack = document.getElementById("snackbar");
+    snack.textContent = message;
+    snack.className = "show";
+    setTimeout(function(){ snack.className = snack.className.replace("show", ""); }, 3000);
+}
+
+/*
+TODO
+1. Create and style modal (HTML, CSS)
+    1a. Create inner forms
+2. Fill in list of modalviews (JS)
+3. Properly display modalview onclick (JS)
+    3a. Auto-populate room radios, entry searches, etc.
+4. Handle form submission (JS)
+5. Style snack message (HTML)
+    5a. Function snack message (JS)
+6. Add event listeners, reloads, etc. for document (JS)
+*/

@@ -18,6 +18,8 @@
             <h1 id="titleText">Title</h1>
         </div>
 
+        <hr>
+
         <!-- Room Name and Logo Banner -->
         <div class="banner">
             <img class="roomLogo square" alt="Upload Room Logo">
@@ -29,26 +31,34 @@
         <img id="brandLogo" alt="Upload Brand Logo">
 
         <!-- Leaderboard Display Space -->
-        <div class="banner fill">
-            <table id="leaderboard">
-                <tr>
-                    <th>Rank</th>
-                    <th>Team</th>
-                    <th>Time</th>
-                </tr>
-                <tr><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td></tr>
-            </table>
-        </div>
+        <section class="banner fill">
+            <div id="leaderboard">
+                <p>
+                    <span>Rank</span>
+                    <span>Team</span>
+                    <span>Time</span>
+                </p>
+                <div id="entries">
+
+                </div>
+            </div>
+        </section>
 
         <!-- Menu Display Space -->
         <div class="flag-menu">
-            <div class="flag"></div>
-            <div class="flag"></div>
-            <div class="flag"></div>
+            <div class="flag">
+                <i class="fa fa-desktop"></i>
+            </div>
+            <div class="flag">
+                <i class="fa fa-plus-square-o"></i>
+                <i class="fa fa-list-alt" title="Add Room"></i>
+                <i class="fa fa-address-card-o" title="Add Entry"></i>
+            </div>
+            <div class="flag">
+                <i class="fa fa-pencil-square-o"></i>
+                <i class="fa fa-list-alt" title="Edit Room"></i>
+                <i class="fa fa-address-card-o" title="Edit Entry"></i>
+            </div>
         </div>
 
         <!-- Modal Display Space -->
