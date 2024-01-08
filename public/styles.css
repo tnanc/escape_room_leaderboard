@@ -4,32 +4,47 @@
 @import url("https://fonts.googleapis.com/css?family=Covered By Your Grace");
 
 :root{
-    --primary-color: #141414;
-    --border-color: #ac9250;
-    --secondary-color: #363636;
-    --tertiary-color: #242424;
-    --text-color-main: #ffffff;
-    --text-color-border: #ac9250;
+    --color-background: #242424;
+    --color-title:      #202020;
+    --color-accent:     #ac9250;
+    --color-hover:      #857242;
+    --color-primary:    #000000;
+    --color-secondary:  #363636;
+    --color-text:       #ffffff;
+    --color-text-head:  #ffffff;
 
-    background-color: var(--tertiary-color);
-    color: var(--text-color-main);
+
+    background-color: var(--color-background);
+    color: var(--color-text);
     margin: 0px;
 }
 
 /* Banners */
 
 .banner{
-    width: 100%;
+    width: 105%;
     height: 10%;
+    margin: -20px 10px 30px -10px;
+    padding-top: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-content: center;
 }
 
+.banner:has(h1){
+    background-color: var(--color-title);
+    display: block;
+    text-align: center;
+}
+
 .square{
     width: 50px;
     height: 50px;
+}
+
+hr{
+    color: var(--color-accent);
 }
 
 /* Company Logo */
@@ -113,7 +128,7 @@
     animation: flag-collapse 0.5s;
 }
 
-.flag:hover{
+.flag:hover:not(:first-of-type){
     animation: flag-expand 0.5s;
     right: 100px;
 }
@@ -167,7 +182,8 @@
 .popup.overlay.large > .content{
     width: 75%;
     height: 75%;
-    background-color: aqua;
+    border: 2px solid var(--color-accent);
+    background-color: var(--color-primary);
     align-self: center;
 }
 
@@ -179,13 +195,102 @@
     float: inline-end;
     margin: 5px 15px;
     cursor: pointer;
+    font-size: xx-large;
+    color: var(--color-accent);
+}
+
+.close:hover{
+    color: var(--color-hover);
+}
+
+.popup > .content > form {
+    width: 100%;
+    max-height: 100%;
+    margin: 10px;
+    padding: 0px 25%;
+    display: grid;
+    grid-template-columns: repeat(1, 20% 30%);
+}
+
+.popup > .content > form > *{
+    margin: 25px 0px;
+}
+
+label {
+    font-family: 'Quantico';
+    font-size: large;
+    line-height: 100%;
+    align-self: center;
+    color: var(--color-text);
+}
+
+input[type="submit"]{
+    width: fit-content;
+    height: 50px;
+    border: none;
+    padding: 0px 25px;
+    font-family: 'Quantico';
+    font-size: large;
+    color: var(--color-text);
+    background-color: var(--color-accent);
+    cursor: pointer;
+}
+
+input[type="submit"]:hover{
+    background-color: var(--color-hover);
+}
+
+input[type="text"], select{
+    width: 100%;
+    height: 50px;
+    padding: 0px 5px;
+    font-family: 'Covered By Your Grace';
+    font-size: x-large;
+    color: var(--color-text);
+    background-color: var(--color-secondary);
+    border: 2px solid var(--color-accent);
+    overflow: hidden;
+}
+
+input[type="text"]:focus, select:focus{
+    border-color: var(--color-hover);
+}
+
+input[type="file"]{
+    /* width: 100%;
+    height: 50px;
+    padding: 0px 5px;
+    font-family: 'Covered By Your Grace';
+    font-size: x-large;
+    color: var(--color-text);
+    background-color: var(--color-secondary);
+    border: 2px solid var(--color-accent);
+    overflow: hidden; */
+}
+
+select{
+    font-family: 'Quantico';
+    font-size: large;
+}
+
+.popup > .content > form > i{
+    margin-right: 30px;
+    font-size: xx-large;
+    line-height: 100%;
+    align-self: center;
+    justify-self: end;
+    color: var(--color-accent);
+}
+
+.popup > .content > form > i:hover{
+    color: var(--color-hover);
 }
 
 #snackbar {
     visibility: hidden;
     min-width: 250px;
     margin-left: -125px;
-    background-color: var(--primary-color);
+    background-color: var(--color-primary);
     text-align: center;
     font-family: 'Quantico';
     font-size: x-large;

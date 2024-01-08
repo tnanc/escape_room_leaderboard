@@ -46,7 +46,7 @@ app.put("/rooms",function(req,res){
 });
 
 app.delete("/rooms", function(req,res){
-    let filename = URL+req.body.RoomName+".json";
+    let filename = URL+req.body.room+".json";
     fs.unlink(filename, (err) => {
         if (err) throw err;
         res.send(`{"status":"success"}`);

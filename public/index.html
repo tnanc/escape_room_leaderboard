@@ -16,9 +16,8 @@
         <!-- Title Banner -->
         <div class="banner">
             <h1 id="titleText">Title</h1>
+            <hr>
         </div>
-
-        <hr>
 
         <!-- Room Name and Logo Banner -->
         <div class="banner">
@@ -51,20 +50,23 @@
             </div>
             <div class="flag">
                 <i class="fa fa-plus-square-o"></i>
-                <i class="fa fa-list-alt" title="Add Room"></i>
-                <i class="fa fa-address-card-o" title="Add Entry"></i>
+                <i class="fa fa-list-alt" title="Add Room" onclick="toggleModal('room_add')"></i>
+                <i class="fa fa-address-card-o" title="Add Entry" onclick="toggleModal('entry_add')"></i>
             </div>
             <div class="flag">
                 <i class="fa fa-pencil-square-o"></i>
-                <i class="fa fa-list-alt" title="Edit Room"></i>
-                <i class="fa fa-address-card-o" title="Edit Entry"></i>
+                <i class="fa fa-list-alt" title="Edit Room" onclick="toggleModal('room_edit')"></i>
+                <i class="fa fa-address-card-o" title="Edit Entry" onclick="toggleModal('entry_edit')"></i>
             </div>
         </div>
 
         <!-- Modal Display Space -->
         <div class="popup overlay large">
             <div class="content" id="modal">
-                <p class="close" onclick="toggleModal()">X</p>
+                <i class="fa fa-window-close-o close" onclick="toggleModal()" aria-hidden="true"></i>
+                <form id="modal_form" onsubmit="handleForm(event)">
+                    
+                </form>
             </div>
         </div>
 
