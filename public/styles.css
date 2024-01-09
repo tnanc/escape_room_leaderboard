@@ -17,6 +17,9 @@
     background-color: var(--color-background);
     color: var(--color-text);
     margin: 0px;
+    -webkit-text-stroke: 0px;
+
+    font-family: 'Quantico';
 }
 
 /* Banners */
@@ -30,6 +33,10 @@
     flex-direction: row;
     justify-content: space-around;
     align-content: center;
+    font-family: 'Mochiy Pop One';
+    color: var(--color-accent);
+    -webkit-text-fill-color: var(--color-text);
+    -webkit-text-stroke: 1px;
 }
 
 .banner:has(h1){
@@ -63,6 +70,8 @@ hr{
 
 .fill{
     height: max-content;
+    color: var(--color-text);
+    -webkit-text-stroke: 0px;
 }
 
 #leaderboard{
@@ -284,6 +293,14 @@ select{
 
 .popup > .content > form > i:hover{
     color: var(--color-hover);
+}
+
+.popup > .content > form > p:has(span){
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    font-size: small;
+    max-height: 50px;
+    overflow-y: scroll;
 }
 
 #snackbar {

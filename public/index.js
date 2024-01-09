@@ -11,7 +11,7 @@ Room Format:var(--
 
 var rooms = [];
 const modal = {
-    displays:"",
+    display:"<label>Rooms To Display:</label><select name='rooms_to_display' id='room_select'></select><p></p><p id='rooms_list'></p><label>Transition Delay:</label><div style='display:flex;flex-direction:row;'><span id='delay_span' style='margin-right: 50px;'>5 seconds</span><span>1</span><input type='range' name='delay' id='delay' min='1' max='10' value='5'><span>10</span></div><label>Entries Displayed:</label><div style='display:flex;flex-direction:row;'><span id='topx_span' style='margin-right: 50px;'>Top 5</span><span>5</span><input type='range' name='topx' id='topx' min='5' max='20' step='5' value='5'><span>20</span></div><p></p><input type='submit' value='Display'>",
     room_add:"<label>Room Name:</label><input type='text' name='RoomName'><label>Room Logo:</label><input type='file' name='RoomLogo'><p></p><input type='submit' value='New Room'>",
     room_edit:"<label>Room:</label><select id='room_select' name='room'></select><label>Room Name:</label><input type='text' name='RoomName' id='RoomName'><label>Room Logo:</label><input type='file' name='RoomLogo' id='RoomLogo'><i class='fa fa-trash' aria-hidden='true' onclick='deleteRoom()' title='Delete Room'></i><input type='submit' value='Update Room'>",
     entry_add:"<label>Room:</label><select id='room_select' name='room'></select><label>Team Name:</label><input type='text' name='team'><label>Time:</label><input type='text' pattern='[0-9]{1,2}:[0-9]{2}' name='time'><p></p><input type='submit' value='New Entry'>",
@@ -156,17 +156,19 @@ function findEntryInRoom(name,room){
 /**
  * Given a string array and integer, will cycle
  * through display of each room in roomsToView
- * and display each room for timeStep seconds
+ * and display each room for delay seconds
  * @param {string[]} roomsToView
+ * @param {int} delay
+ * @param {int} topx
  */
-function displayRooms(roomsToView){
+function displayRooms(roomsToView, delay, topx){
     let roomIndex = 0;
     window.timer = setInterval(()=>{
         const room = findRoom(roomsToView[roomIndex]);
-        displayRoom(room);
+        roomDisplay(room,topx);
         roomIndex++;
         if(roomIndex>=roomsToView.length) roomIndex = 0;
-    },document.getElementById("timeStep").value * 1000);
+    }, delay*1000);
 }
 
 function toggleModal(display){
@@ -175,6 +177,7 @@ function toggleModal(display){
     if(display) modal_form.innerHTML = modal[display];
     const room_select = document.getElementById("room_select");
     const entry_select = document.getElementById("entry_select");
+    const delay_range = document.getElementById("delay");
 
     //if the room_select object exists...
     if(room_select){
@@ -200,6 +203,21 @@ function toggleModal(display){
                     entry_select.appendChild(option);
                 }
             }
+
+            const rooms_list = document.getElementById("rooms_list");
+            if(rooms_list){
+                for(let child of rooms_list.children){
+                    if(child.textContent == room_select.value) return ;
+                }
+                const span = document.createElement("span");
+                span.style.cursor = "pointer";
+                span.addEventListener("click", ()=> rooms_list.removeChild(span) );
+                span.addEventListener("mouseover", ()=> span.style.color = "var(--color-hover)" );
+                span.addEventListener("mouseout", ()=> span.style.color = "var(--color-text)");
+
+                span.textContent = room_select.value;
+                rooms_list.appendChild(span);
+            }
         })
     }
     //if the entry_select object exists
@@ -209,7 +227,13 @@ function toggleModal(display){
             const entry = findEntryInRoom(entry_select.value,findRoom(room_select.value));
             document.getElementById("team").value = entry.Team;
             document.getElementById("time").value = entry.Time;
-        })
+        });
+    }
+    //if the delay_range object exists
+    if(delay_range){
+        //change fields on delay and display to match display info
+        delay_range.addEventListener("change",()=> document.getElementById("delay_span").textContent = delay_range.value+" seconds" );
+        document.getElementById("topx").addEventListener("change",()=> document.getElementById("topx_span").textContent = "Top "+document.getElementById("topx").value );
     }
 }
 
@@ -230,10 +254,22 @@ function handleForm(e){
     const data = Object.fromEntries(new FormData(form).entries());
 
     switch(form.lastChild.value){
+        case "Display":
+        {
+            let roomsToView = [];
+            for(let child of document.getElementById("rooms_list").children){
+                roomsToView.push(child.textContent);
+            }
+            displayRooms(roomsToView, data.delay, data.topx);
+            toggleModal();
+            break;
+        }
         case "New Room":
+        {
             data.RoomLogo = data.RoomLogo["name"];
             request("POST",JSON.stringify(data),"Room Added");
             break;
+        }
         case "Update Room":
         {
             let room = findRoom(data.room);
