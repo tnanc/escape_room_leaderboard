@@ -137,6 +137,10 @@ hr{
     animation: flag-collapse 0.5s;
 }
 
+.flag:first-of-type{
+    cursor: pointer;
+}
+
 .flag:hover:not(:first-of-type){
     animation: flag-expand 0.5s;
     right: 100px;
@@ -176,7 +180,7 @@ hr{
     visibility: hidden;
 }
 
-.popup.overlay.large{
+.popup.overlay{
     width: 100%;
     height: 100%;
     position: absolute;
@@ -188,7 +192,7 @@ hr{
     justify-content: center;
 }
 
-.popup.overlay.large > .content{
+.popup.overlay > .content.large{
     width: 75%;
     height: 75%;
     border: 2px solid var(--color-accent);
@@ -198,6 +202,7 @@ hr{
 
 .visible{
     visibility: visible;
+    animation: fadeIn 1s;
 }
 
 .close{
@@ -212,13 +217,17 @@ hr{
     color: var(--color-hover);
 }
 
-.popup > .content > form {
+.content.large > form{
     width: 100%;
     max-height: 100%;
     margin: 10px;
     padding: 0px 25%;
     display: grid;
     grid-template-columns: repeat(1, 20% 30%);
+}
+
+.content.large > form{
+    padding: 0px 25%;
 }
 
 .popup > .content > form > *{
@@ -230,10 +239,11 @@ label {
     font-size: large;
     line-height: 100%;
     align-self: center;
+    min-width: 200px;
     color: var(--color-text);
 }
 
-input[type="submit"]{
+input[type="submit"], input[type="button"]{
     width: fit-content;
     height: 50px;
     border: none;
@@ -245,7 +255,7 @@ input[type="submit"]{
     cursor: pointer;
 }
 
-input[type="submit"]:hover{
+input[type="submit"]:hover, input[type="button"]:hover{
     background-color: var(--color-hover);
 }
 
@@ -303,15 +313,14 @@ select{
     overflow-y: scroll;
 }
 
-#snackbar {
-    visibility: hidden;
+.content.small {
     min-width: 250px;
     margin-left: -125px;
     background-color: var(--color-primary);
     text-align: center;
     font-family: 'Quantico';
     font-size: x-large;
-    
+    border: 2px solid var(--color-accent);
     border-radius: 2px;
     padding: 16px;
     position: fixed;
@@ -319,10 +328,10 @@ select{
     left: 50%;
     bottom: 150px;
 }
-  
-#snackbar.show {
+
+.popup.content.slideUp.visible{
     visibility: visible;
-    animation: showSnack 0.5s, hideSnack 0.5s 2.5s;
+    animation: slideUp 0.5s, slideDown 0.5s 2.5s;
 }
 
 @keyframes fadeIn {
@@ -330,17 +339,12 @@ select{
     to {opacity:1 ;}    
 }
 
-@keyframes showSnack {
+@keyframes slideUp {
     from {bottom: 0; opacity: 0;}
     to {bottom: 150px; opacity: 1;}
 }
   
-@keyframes hideSnack {
+@keyframes slideDown {
     from {bottom: 150px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
-}
-
-.show {
-    animation: fadeIn 1s;
-    visibility: visible;
 }

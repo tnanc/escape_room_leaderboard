@@ -61,8 +61,8 @@
         </div>
 
         <!-- Modal Display Space -->
-        <div class="popup overlay large">
-            <div class="content" id="modal">
+        <div class="popup overlay">
+            <div class="content large" id="modal">
                 <i class="fa fa-window-close-o close" onclick="toggleModal()" aria-hidden="true"></i>
                 <form id="modal_form" onsubmit="handleForm(event)">
                     
@@ -71,8 +71,18 @@
         </div>
 
         <!-- Snack Message -->
-        <div class="popup content small">
+        <div class="popup content small slideUp" id="snack"></div>
 
+        <!-- Delete Confirmation -->
+        <div class="popup overlay">
+            <div class="content small" id="confirmation_form">
+                <p>Confirm deletion of:</p>
+                <label id="to_be_deleted"></label>
+                <hr>
+                <input type="button" value="Keep" id="keep">
+                <input type="button" value="Delete" id="delete">
+            </div>
         </div>
+
     </body>
 </html>

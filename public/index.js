@@ -162,6 +162,12 @@ function findEntryInRoom(name,room){
  * @param {int} topx
  */
 function displayRooms(roomsToView, delay, topx){
+    if(roomsToView.length < 2){
+        const room = findRoom(roomsToView[0]);
+        roomDisplay(room,topx);
+        return ;
+    }
+    
     let roomIndex = 0;
     window.timer = setInterval(()=>{
         const room = findRoom(roomsToView[roomIndex]);
@@ -244,7 +250,7 @@ function request(type,send,message){
         body: send,
     })
     .then((response) => response.json())
-    .then((data) => {toggleModal(); /* loadDisplay(); */ loadRooms(); /* snackMessage(message); */})
+    .then((data) => {toggleModal(); /* loadDisplay(); */ loadRooms(); snackMessage(message); })
     .catch((error) => console.error(error));
 }
 
@@ -262,7 +268,7 @@ function handleForm(e){
             }
             displayRooms(roomsToView, data.delay, data.topx);
             toggleModal();
-            break;
+            return ;
         }
         case "New Room":
         {
@@ -305,12 +311,26 @@ function handleForm(e){
     loadRooms();
 }
 
-function deleteRoom(){
-    //TODO - ask for conrfirmation
+function confirm_deletion(to_be_deleted){
+    return new Promise((resolve)=>{
+        document.getElementById("confirmation_form").parentElement.classList.toggle("visible");
+        document.getElementById("to_be_deleted").innerHTML = to_be_deleted;
 
+        document.getElementById("keep").addEventListener("click",()=>{
+            document.getElementById("confirmation_form").parentElement.classList.toggle("visible");
+            resolve(false);
+        });
+        document.getElementById("delete").addEventListener("click",()=>{
+            resolve(true);
+        });
+    });
+}
+
+async function deleteRoom(){
     const form = document.getElementById("modal_form");
     const data = Object.fromEntries(new FormData(form).entries());
     const room_select = document.getElementById("room_select");
+    if(!(await confirm_deletion(room_select.value)))return ;
     const room = findRoom(room_select.value);
     if(room){
         window.rooms.splice(room,1);
@@ -318,11 +338,11 @@ function deleteRoom(){
     }
 }
 
-function deleteEntry(){
-    //TODO - ask for confirmation
-
+async function deleteEntry(){
     const room_select = document.getElementById("room_select");
     const entry_select = document.getElementById("entry_select");
+    if(!(await confirm_deletion(entry_select.value+"<span style='color:var(--color-hover);'> from </span>"+room_select.value))) return ;
+    document.getElementById("confirmation_form").parentElement.classList.toggle("visible");
     const room = findRoom(room_select.value);
     const entry = findEntryInRoom(entry_select.value, room);
     if(entry){
@@ -332,19 +352,16 @@ function deleteEntry(){
 }
 
 function snackMessage(message){
-    var snack = document.getElementById("snackbar");
+    var snack = document.getElementById("snack");
     snack.textContent = message;
-    snack.className = "show";
-    setTimeout(function(){ snack.className = snack.className.replace("show", ""); }, 3000);
+    snack.classList.toggle("visible");
+    setTimeout( ()=>snack.classList.toggle("visible"), 2900);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{/* loadDisplay(); */ loadRooms();})
 
 /*
 TODO
-1. Style snack message (HTML)
-    1a. Function snack message (JS)
-2. Create Delete Confirmation Messages (HTML, JS)
-3. Add display settings (HTML, CSS, JS)
-4. Figure out filename changes for deleting a room
+1. Add display settings (HTML, CSS, JS)
+2. Figure out filename changes for deleting a room
 */
