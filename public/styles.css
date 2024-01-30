@@ -20,6 +20,7 @@
     -webkit-text-stroke: 0px;
 
     font-family: 'Quantico';
+    overflow: hidden;
 }
 
 /* Banners */
@@ -77,8 +78,8 @@ hr{
 #leaderboard{
     min-width: 600px;
     max-height: 80%;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    /* overflow-y: scroll;
+    overflow-x: hidden; */
 }
 
 #leaderboard > p{
@@ -108,7 +109,6 @@ hr{
     text-align: center;
     font-family: 'Quantico';
     font-size: large;
-    overflow: hidden;
 }
 
 /* Flag Menu */
@@ -200,7 +200,7 @@ hr{
     align-self: center;
 }
 
-.visible{
+.popup.visible{
     visibility: visible;
     animation: fadeIn 1s;
 }
@@ -226,11 +226,7 @@ hr{
     grid-template-columns: repeat(1, 20% 30%);
 }
 
-.content.large > form{
-    padding: 0px 25%;
-}
-
-.popup > .content > form > *{
+.content > form > *{
     margin: 25px 0px;
 }
 
@@ -268,7 +264,6 @@ input[type="text"], select{
     color: var(--color-text);
     background-color: var(--color-secondary);
     border: 2px solid var(--color-accent);
-    overflow: hidden;
 }
 
 input[type="text"]:focus, select:focus{
@@ -283,8 +278,7 @@ input[type="file"]{
     font-size: x-large;
     color: var(--color-text);
     background-color: var(--color-secondary);
-    border: 2px solid var(--color-accent);
-    overflow: hidden; */
+    border: 2px solid var(--color-accent); */
 }
 
 select{
@@ -301,11 +295,11 @@ select{
     color: var(--color-accent);
 }
 
-.popup > .content > form > i:hover{
+.content > form > i:hover{
     color: var(--color-hover);
 }
 
-.popup > .content > form > p:has(span){
+.content > form > p:has(span){
     display: grid;
     grid-template-columns: repeat(5,1fr);
     font-size: small;
@@ -329,7 +323,7 @@ select{
     bottom: 150px;
 }
 
-.popup.content.slideUp.visible{
+.popup.slideUp.visible{
     visibility: visible;
     animation: slideUp 0.5s, slideDown 0.5s 2.5s;
 }

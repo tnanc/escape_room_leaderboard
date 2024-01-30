@@ -162,6 +162,8 @@ function findEntryInRoom(name,room){
  * @param {int} topx
  */
 function displayRooms(roomsToView, delay, topx){
+    clearInterval(timer);
+
     if(roomsToView.length < 2){
         const room = findRoom(roomsToView[0]);
         roomDisplay(room,topx);
@@ -363,5 +365,7 @@ document.addEventListener("DOMContentLoaded",()=>{/* loadDisplay(); */ loadRooms
 /*
 TODO
 1. Add display settings (HTML, CSS, JS)
+    1a. Figure out how to resize/some way to display when more than 5 entries
 2. Figure out filename changes for deleting a room
+3. Check forms for empty/mismatched fields
 */
